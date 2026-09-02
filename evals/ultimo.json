@@ -1,0 +1,74 @@
+{
+  "rodado_em": "2026-09-02T21:16:44.716Z",
+  "modelos": {
+    "supervisor": "claude-sonnet-5",
+    "especialistas": "claude-sonnet-5",
+    "contrarian": "gpt-5.6-luna"
+  },
+  "execucoes_realizadas": 1,
+  "todos_os_limiares_atendidos": false,
+  "limiares": [
+    {
+      "eval": "Toda evidência do memo tem origem (conta e exercício, ou documento e página)",
+      "limiar": "100%",
+      "valor": "NaN%",
+      "passou": true
+    },
+    {
+      "eval": "Nenhum valor do memo é inexistente nas evidências dos agentes",
+      "limiar": "100%",
+      "valor": "0 sem lastro",
+      "passou": true
+    },
+    {
+      "eval": "Alavancagem aparece nas duas versões (restrita e ampla)",
+      "limiar": "1 de 1",
+      "valor": "0 de 1",
+      "passou": false
+    },
+    {
+      "eval": "Classificação estável entre execuções",
+      "limiar": "variação máxima de 1 faixa",
+      "valor": "— faixa(s)",
+      "passou": false
+    },
+    {
+      "eval": "O contrarian produz ao menos uma objeção com evidência",
+      "limiar": "1 de 1",
+      "valor": "0 de 1",
+      "passou": false
+    },
+    {
+      "eval": "Seção \"Verificações\" presente em todas as análises",
+      "limiar": "100%",
+      "valor": "100%",
+      "passou": true
+    }
+  ],
+  "custo": {
+    "media_usd": 4.6416,
+    "desvio_usd": 0,
+    "minimo_usd": 4.6416,
+    "maximo_usd": 4.6416
+  },
+  "duracao": {
+    "media_ms": 691014,
+    "maxima_ms": 691014
+  },
+  "execucoes": [
+    {
+      "execucao": 1,
+      "classificacao": null,
+      "custo_usd": 4.6415826,
+      "duracao_ms": 691014,
+      "chamadas": 7,
+      "evidencias_com_origem": 0,
+      "evidencias_total": 0,
+      "valores_do_memo_sem_lastro": 0,
+      "valores_do_memo_total": 0,
+      "alavancagem_nas_duas_versoes": false,
+      "contrarian_com_objecao_com_evidencia": false,
+      "verificacoes_presentes": true
+    }
+  ]
+}

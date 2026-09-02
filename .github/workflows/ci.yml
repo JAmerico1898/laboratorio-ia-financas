@@ -1,0 +1,46 @@
+name: CI
+
+# Portão da §10.7: nada é publicado com teste vermelho.
+#
+# O `sync:curso` NÃO roda aqui de propósito: o repositório é autônomo e o GitHub Actions não
+# enxerga a pasta 03_Prompt_e_Skill/ do curso. Aquele script é local (§5.8).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  portao:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tipos
+        run: npx tsc --noEmit
+
+      - name: Testes unitários, de componente, de segurança e de fidelidade visual
+        run: npm test
+
+      - name: Instalar navegador do Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Testes de ponta a ponta (fornecedores simulados)
+        run: npm run test:e2e
+        env:
+          FORNECEDORES_SIMULADOS: "1"
+
+      - name: Registro de evals
+        # Os evals da §10.4 gastam chamadas reais e rodam sob demanda, não no CI.
+        # O que o CI cobra é que o resultado da última rodada esteja versionado.
+        run: test -f evals/ultimo.json

@@ -1,0 +1,51 @@
+#!/bin/sh
+# Hook de pre-commit (spec §12).
+#
+# CLAUDE.md é instrução — o agente pode não seguir.
+# Hook é controle — o agente não consegue não seguir.
+#
+# Instale com:  git config core.hooksPath .githooks
+
+set -e
+
+echo "pre-commit: procurando chave em código de cliente…"
+
+# Arquivos a serem commitados, só .ts/.tsx sob src/
+arquivos=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^src/.*\.(ts|tsx)$' || true)
+
+falhou=0
+for arquivo in $arquivos; do
+  [ -f "$arquivo" ] || continue
+  # Só interessa arquivo de cliente.
+  if head -3 "$arquivo" | grep -qE '^\s*["'\'']use client["'\'']'; then
+    for segredo in ANTHROPIC_API_KEY OPENAI_API_KEY KV_REST_API_TOKEN; do
+      if grep -q "$segredo" "$arquivo"; then
+        echo "  ✗ $arquivo referencia $segredo em código de cliente"
+        falhou=1
+      fi
+    done
+    if grep -q 'process\.env' "$arquivo"; then
+      echo "  ✗ $arquivo lê process.env em código de cliente"
+      falhou=1
+    fi
+  fi
+done
+
+# Chave de API por extenso em qualquer arquivo do commit — inclusive versionado por engano.
+for arquivo in $(git diff --cached --name-only --diff-filter=ACM); do
+  [ -f "$arquivo" ] || continue
+  if grep -qE 'sk-ant-[A-Za-z0-9_-]{20,}|sk-proj-[A-Za-z0-9_-]{20,}' "$arquivo"; then
+    echo "  ✗ $arquivo contém o que parece ser uma chave de API por extenso"
+    falhou=1
+  fi
+done
+
+if [ "$falhou" -ne 0 ]; then
+  echo "pre-commit: commit abortado. Não use --no-verify: corrija."
+  exit 1
+fi
+echo "  ✓ nenhuma chave em código de cliente"
+
+echo "pre-commit: rodando npm test…"
+npm test --silent
+echo "pre-commit: verde."
