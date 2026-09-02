@@ -69,18 +69,85 @@ function normalizar(no: JsonSchema): JsonSchema {
  */
 export const CAMPOS_CARIMBADOS_PELO_SERVIDOR = ["modelo", "fornecedor"] as const;
 
-function semMetadados(schema: JsonSchema): JsonSchema {
+/**
+ * O mesmo princípio no memo, por duas razões.
+ *
+ * A primeira é de contrato: `execucao_id`, `contraparte` e `operacao` são dados de entrada; pedir
+ * ao supervisor que os repita é convidá-lo a errar um CNPJ. E `analises` são as próprias análises
+ * que ele acabou de receber — o orquestrador já as tem em mãos.
+ *
+ * A segunda é dura: com `analises` dentro, a API recusa o schema —
+ * *"The compiled grammar is too large, which would cause performance issues."* O `AnaliseAgente`
+ * inteiro, repetido dentro do memo, estoura o limite da gramática compilada.
+ */
+export const CAMPOS_DO_MEMO_CARIMBADOS = [
+  "execucao_id",
+  "contraparte",
+  "operacao",
+  "analises",
+] as const;
+
+function semCampos(schema: JsonSchema, campos: readonly string[]): JsonSchema {
   const props = schema.properties as Record<string, unknown> | undefined;
   const obrigatorios = schema.required as string[] | undefined;
-  if (props) for (const campo of CAMPOS_CARIMBADOS_PELO_SERVIDOR) delete props[campo];
-  if (obrigatorios) {
-    schema.required = obrigatorios.filter(
-      (c) => !(CAMPOS_CARIMBADOS_PELO_SERVIDOR as readonly string[]).includes(c),
-    );
-  }
+  if (props) for (const campo of campos) delete props[campo];
+  if (obrigatorios) schema.required = obrigatorios.filter((c) => !campos.includes(c));
   return schema;
 }
 
-export const JSON_SCHEMA_ANALISE = semMetadados(paraJsonSchema(analiseAgenteSchema));
-export const JSON_SCHEMA_MEMO = paraJsonSchema(creditMemoSchema);
+export const JSON_SCHEMA_ANALISE = semCampos(
+  paraJsonSchema(analiseAgenteSchema),
+  CAMPOS_CARIMBADOS_PELO_SERVIDOR,
+);
+export const JSON_SCHEMA_MEMO = semCampos(
+  paraJsonSchema(creditMemoSchema),
+  CAMPOS_DO_MEMO_CARIMBADOS,
+);
 export const JSON_SCHEMA_PLANO = paraJsonSchema(planoDeAnaliseSchema);
+
+/**
+ * A saída estruturada estrita da OpenAI é mais exigente que a da Anthropic: *"'required' is
+ * required to be supplied and to be an array including every key in properties"*. Campo opcional
+ * não existe lá — o jeito de expressar "pode não vir" é `type: ["number", "null"]` com o campo
+ * ainda assim obrigatório.
+ *
+ * Esta função faz essa tradução. O contrato não muda: o Zod continua aceitando `undefined` nos
+ * mesmos campos, e um `null` que chegue do contrarian é limpo antes da validação.
+ */
+export function paraOpenAIEstrito(schema: JsonSchema): JsonSchema {
+  const copia = structuredClone(schema);
+  const tornarTudoObrigatorio = (no: JsonSchema) => {
+    if (no.type === "object" && no.properties) {
+      const props = no.properties as Record<string, JsonSchema>;
+      const jaObrigatorios = new Set((no.required as string[] | undefined) ?? []);
+      for (const [nome, prop] of Object.entries(props)) {
+        if (!jaObrigatorios.has(nome) && typeof prop.type === "string") {
+          prop.type = [prop.type, "null"];
+        }
+      }
+      no.required = Object.keys(props);
+    }
+    for (const valor of Object.values(no)) {
+      if (Array.isArray(valor)) {
+        for (const i of valor) if (i && typeof i === "object") tornarTudoObrigatorio(i as JsonSchema);
+      } else if (valor && typeof valor === "object") {
+        tornarTudoObrigatorio(valor as JsonSchema);
+      }
+    }
+  };
+  tornarTudoObrigatorio(copia);
+  return copia;
+}
+
+/** Remove recursivamente os `null` que o modo estrito da OpenAI obriga a emitir. */
+export function limparNulos<T>(valor: T): T {
+  if (Array.isArray(valor)) return valor.map(limparNulos) as T;
+  if (valor && typeof valor === "object") {
+    const saida: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(valor)) {
+      if (v !== null) saida[k] = limparNulos(v);
+    }
+    return saida as T;
+  }
+  return valor;
+}

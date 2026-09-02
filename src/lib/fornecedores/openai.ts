@@ -14,8 +14,18 @@
 
 import OpenAI from "openai";
 import type { AdaptadorFornecedor, PedidoModelo, RespostaModelo } from "@/lib/fornecedores/tipos";
+import { paraOpenAIEstrito, limparNulos } from "@/lib/schema-json";
 
 const ESFORCO = "padrão (1,0)";
+
+/** Reserializa o JSON sem os nulos que o modo estrito obriga a emitir. */
+function limparTextoJson(bruto: string): string {
+  try {
+    return JSON.stringify(limparNulos(JSON.parse(bruto)));
+  } catch {
+    return bruto;
+  }
+}
 
 export class FornecedorOpenAI implements AdaptadorFornecedor {
   readonly fornecedor = "openai" as const;
@@ -46,12 +56,18 @@ export class FornecedorOpenAI implements AdaptadorFornecedor {
       ],
       response_format: {
         type: "json_schema",
-        json_schema: { name: "analise_agente", strict: true, schema: pedido.schema },
+        json_schema: {
+          name: "analise_agente",
+          strict: true,
+          schema: paraOpenAIEstrito(pedido.schema),
+        },
       },
     });
 
     return {
-      texto: resposta.choices[0]?.message?.content ?? "",
+      // O modo estrito obriga o modelo a emitir null nos campos opcionais; o contrato da §4 usa
+      // ausência. A limpeza acontece aqui, na fronteira do fornecedor.
+      texto: limparTextoJson(resposta.choices[0]?.message?.content ?? ""),
       modelo: this.modelo,
       fornecedor: this.fornecedor,
       esforco: ESFORCO,

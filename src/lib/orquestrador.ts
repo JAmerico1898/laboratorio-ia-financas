@@ -116,25 +116,40 @@ export async function executarAnalise(opcoes: OpcoesExecucao): Promise<EstadoExe
     usuario: string,
     schema: Parameters<typeof comReenvioUnico<T>>[0],
     jsonSchema: Record<string, unknown>,
-    /** Só as análises de agente têm metadados carimbados pelo servidor. */
+    /** Só as análises de agente têm modelo e fornecedor carimbados pelo servidor. */
     carimbarModelo = false,
+    /** Campos que o servidor conhece e não pede ao modelo (ver schema-json.ts). */
+    carimboExtra?: () => Record<string, unknown>,
   ): Promise<{ dados?: T; erro?: string }> {
     const inicio = Date.now();
     let entrada = 0;
     let saida = 0;
     let esforco: string | number = "";
 
-    const { resultado } = await comReenvioUnico<T>(schema, async (correcao) => {
+    // Um erro do fornecedor — 400 de schema, 429, queda de rede — vira erro DESTA etapa, com a
+    // mensagem no log. Ele não pode derrubar a execução inteira: o memo tem de sair com a
+    // ausência declarada (§10.3, caso 3), e uma aula não pode acabar em stack trace.
+    const { resultado, erroDaPrimeira } = await comReenvioUnico<T>(schema, async (correcao) => {
       const pedido: PedidoModelo = { sistema, usuario, correcao, schema: jsonSchema };
-      const r = await adaptador.gerar(pedido);
-      entrada += r.tokens_entrada;
-      saida += r.tokens_saida;
-      esforco = r.esforco;
-      return r.texto;
+      try {
+        const r = await adaptador.gerar(pedido);
+        entrada += r.tokens_entrada;
+        saida += r.tokens_saida;
+        esforco = r.esforco;
+        return r.texto;
+      } catch (e) {
+        return JSON.stringify({
+          __erro_do_fornecedor: e instanceof Error ? e.message : String(e),
+        });
+      }
     },
     carimbarModelo
-      ? () => ({ modelo: adaptador.modelo, fornecedor: adaptador.fornecedor })
-      : undefined,
+      ? () => ({
+          ...carimboExtra?.(),
+          modelo: adaptador.modelo,
+          fornecedor: adaptador.fornecedor,
+        })
+      : carimboExtra,
     );
 
     chamadas.push({
@@ -152,6 +167,7 @@ export async function executarAnalise(opcoes: OpcoesExecucao): Promise<EstadoExe
         tokens_saida: saida,
       }),
       ...(resultado.ok ? {} : { erro: resultado.erro }),
+      ...(erroDaPrimeira ? { reenviado: erroDaPrimeira } : {}),
     });
 
     return resultado.ok ? { dados: resultado.dados } : { erro: resultado.erro };
@@ -283,6 +299,16 @@ export async function executarAnalise(opcoes: OpcoesExecucao): Promise<EstadoExe
       ),
       creditMemoSchema,
       JSON_SCHEMA_MEMO,
+      false,
+      () => ({
+        execucao_id,
+        contraparte: dossie.contraparte,
+        operacao: dossie.operacao,
+        analises:
+          comContrarian && analiseContrarian
+            ? [...analisesEspecialistas, analiseContrarian]
+            : analisesEspecialistas,
+      }),
     );
 
   if (incluir_contrarian) {

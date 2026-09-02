@@ -1,5 +1,5 @@
 {
-  "rodado_em": "2026-09-02T21:16:44.716Z",
+  "rodado_em": "2026-09-02T21:36:24.500Z",
   "modelos": {
     "supervisor": "claude-sonnet-5",
     "especialistas": "claude-sonnet-5",
@@ -11,8 +11,8 @@
     {
       "eval": "Toda evidência do memo tem origem (conta e exercício, ou documento e página)",
       "limiar": "100%",
-      "valor": "NaN%",
-      "passou": true
+      "valor": "94.1%",
+      "passou": false
     },
     {
       "eval": "Nenhum valor do memo é inexistente nas evidências dos agentes",
@@ -35,8 +35,8 @@
     {
       "eval": "O contrarian produz ao menos uma objeção com evidência",
       "limiar": "1 de 1",
-      "valor": "0 de 1",
-      "passou": false
+      "valor": "1 de 1",
+      "passou": true
     },
     {
       "eval": "Seção \"Verificações\" presente em todas as análises",
@@ -46,28 +46,81 @@
     }
   ],
   "custo": {
-    "media_usd": 4.6416,
+    "media_usd": 3.1664,
     "desvio_usd": 0,
-    "minimo_usd": 4.6416,
-    "maximo_usd": 4.6416
+    "minimo_usd": 3.1664,
+    "maximo_usd": 3.1664
   },
   "duracao": {
-    "media_ms": 691014,
-    "maxima_ms": 691014
+    "media_ms": 160297,
+    "maxima_ms": 160297
   },
   "execucoes": [
     {
       "execucao": 1,
       "classificacao": null,
-      "custo_usd": 4.6415826,
-      "duracao_ms": 691014,
+      "custo_usd": 3.1664326,
+      "duracao_ms": 160297,
       "chamadas": 7,
-      "evidencias_com_origem": 0,
-      "evidencias_total": 0,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 27.3,
+          "entrada": 206984,
+          "saida": 1775,
+          "usd": 0.4317
+        },
+        {
+          "etapa": "setorial",
+          "s": 54.9,
+          "entrada": 416293,
+          "saida": 4383,
+          "usd": 0.8764
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 59.1,
+          "entrada": 416375,
+          "saida": 5046,
+          "usd": 0.8832
+        },
+        {
+          "etapa": "financeiro",
+          "s": 101.8,
+          "entrada": 424571,
+          "saida": 9194,
+          "usd": 0.9411
+        },
+        {
+          "etapa": "contrarian",
+          "s": 29.9,
+          "entrada": 154919,
+          "saida": 2519,
+          "usd": 0.034
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 1.1,
+          "entrada": 0,
+          "saida": 0,
+          "usd": 0,
+          "erro": "falhou duas vezes. Primeira: o fornecedor recusou a chamada — 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large, which would cause performance issues. Simplify your tool schemas or reduce the number of strict tools.\"},\"request_id\":\"req_011CefLHHzf41wQ67WLJbtEx\"} | Segunda: o fornecedor recusou a chamada — 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large, which would cause performance issues. Simplify your tool schemas or reduce the number of strict tools.\"},\"request_id\":\"req_011CefLHLPGsFmVQhSrJh18s\"}"
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 1.3,
+          "entrada": 0,
+          "saida": 0,
+          "usd": 0,
+          "erro": "falhou duas vezes. Primeira: o fornecedor recusou a chamada — 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large, which would cause performance issues. Simplify your tool schemas or reduce the number of strict tools.\"},\"request_id\":\"req_011CefLHHtTD6dj77NbEXEGw\"} | Segunda: o fornecedor recusou a chamada — 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"The compiled grammar is too large, which would cause performance issues. Simplify your tool schemas or reduce the number of strict tools.\"},\"request_id\":\"req_011CefLHM4CdJop9U1Xpnj6C\"}"
+        }
+      ],
+      "evidencias_com_origem": 16,
+      "evidencias_total": 17,
       "valores_do_memo_sem_lastro": 0,
       "valores_do_memo_total": 0,
       "alavancagem_nas_duas_versoes": false,
-      "contrarian_com_objecao_com_evidencia": false,
+      "contrarian_com_objecao_com_evidencia": true,
       "verificacoes_presentes": true
     }
   ]

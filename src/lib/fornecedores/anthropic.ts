@@ -12,11 +12,14 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { AdaptadorFornecedor, PedidoModelo, RespostaModelo } from "@/lib/fornecedores/tipos";
 
 /**
- * Nível de esforço dos quatro papéis Claude. A §3.2 fixa "high"; a variável de ambiente existe
- * para o ensaio poder medir o trade-off entre qualidade e o critério de 3 minutos da §13.1 sem
- * mexer no código. O padrão continua sendo o do spec.
+ * Nível de esforço dos quatro papéis Claude.
+ *
+ * A versão 1.1 do spec fixava "high". Medido em 2 de setembro de 2026, "high" leva de 70 s a
+ * 351 s por chamada, e a execução tem quatro estágios sequenciais — o critério de 3 minutos da
+ * §13.1 não fecha. Decisão do autor: **"medium"**, com a variável de ambiente disponível para o
+ * ensaio comparar sem mexer no código.
  */
-const ESFORCO = (process.env.ESFORCO_CLAUDE ?? "high") as
+const ESFORCO = (process.env.ESFORCO_CLAUDE ?? "medium") as
   | "low"
   | "medium"
   | "high"

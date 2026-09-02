@@ -12,6 +12,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pathToFileURL } from "node:url";
+import { imprimirEtapas } from "./imprimir-etapas.mjs";
 
 const raiz = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -66,6 +67,15 @@ for (let i = 0; i < n; i++) {
     custo_usd: estado.log.custo_total_usd,
     duracao_ms: estado.log.duracao_ms,
     chamadas: estado.log.chamadas.length,
+    por_etapa: estado.log.chamadas.map((c) => ({
+      etapa: c.etapa,
+      s: Number((c.duracao_ms / 1000).toFixed(1)),
+      entrada: c.tokens_entrada,
+      saida: c.tokens_saida,
+      usd: Number(c.custo_usd.toFixed(4)),
+      erro: c.erro,
+      reenviado: c.reenviado,
+    })),
     evidencias_com_origem: evidencias.filter((e) => TEM_ORIGEM.test(e.origem)).length,
     evidencias_total: evidencias.length,
     valores_do_memo_sem_lastro: valoresDoMemo.filter((v) => !valoresDasEvidencias.has(v)).length,
@@ -77,7 +87,8 @@ for (let i = 0; i < n; i++) {
     ),
     verificacoes_presentes: analises.every((a) => a.verificacoes !== undefined),
   });
-  console.log(`${memo?.classificacao ?? "sem memo"} · US$ ${estado.log.custo_total_usd.toFixed(4)}`);
+  console.log(`${memo?.classificacao ?? "sem memo"} · US$ ${estado.log.custo_total_usd.toFixed(4)} · ${(estado.log.duracao_ms / 1000).toFixed(0)}s`);
+  imprimirEtapas(estado.log.chamadas);
 }
 
 const faixas = ["R1", "R2", "R3", "R4", "R5", "R6", "R7"];

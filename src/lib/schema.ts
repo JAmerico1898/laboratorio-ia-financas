@@ -131,6 +131,8 @@ export const chamadaLogSchema = z.object({
   duracao_ms: z.number().nonnegative(),
   custo_usd: z.number().nonnegative(),
   erro: z.string().optional(),
+  /** Por que a primeira resposta foi rejeitada, quando houve reenvio. Diagnóstico, não falha. */
+  reenviado: z.string().optional(),
 });
 
 export const logExecucaoSchema = z.object({

@@ -8,6 +8,8 @@ import {
   JSON_SCHEMA_MEMO,
   JSON_SCHEMA_PLANO,
   CAMPOS_CARIMBADOS_PELO_SERVIDOR,
+  paraOpenAIEstrito,
+  limparNulos,
 } from "@/lib/schema-json";
 import { analiseAgenteSchema } from "@/lib/schema";
 import { comReenvioUnico } from "@/lib/parser";
@@ -95,5 +97,53 @@ describe("carimbo do servidor no parser", () => {
     );
     expect(resultado.dados?.modelo).toBe("claude-sonnet-5");
     expect(resultado.dados?.fornecedor).toBe("anthropic");
+  });
+});
+
+describe("tradução para o modo estrito da OpenAI", () => {
+  const estrito = paraOpenAIEstrito(JSON_SCHEMA_ANALISE);
+
+  it("todo objeto exige TODAS as suas propriedades", () => {
+    percorrer(estrito, (o) => {
+      if (o.type === "object" && o.properties) {
+        expect(new Set(o.required as string[])).toEqual(
+          new Set(Object.keys(o.properties as Record<string, unknown>)),
+        );
+      }
+    });
+  });
+
+  it("o campo opcional vira anulável em vez de sumir do required", () => {
+    const evidencia = (
+      (estrito.properties as Record<string, Record<string, Record<string, unknown>>>).evidencias
+        .items as Record<string, unknown>
+    ).properties as Record<string, { type: unknown }>;
+    expect(evidencia.valor.type).toEqual(["number", "null"]);
+    expect(evidencia.afirmacao.type).toBe("string");
+  });
+
+  it("não altera o schema original", () => {
+    expect((JSON_SCHEMA_ANALISE.required as string[]).includes("divergencias")).toBe(false);
+  });
+
+  it("limparNulos remove os nulos que o modo estrito obriga a emitir", () => {
+    expect(limparNulos({ a: 1, b: null, c: { d: null, e: 2 }, f: [{ g: null, h: 3 }] })).toEqual({
+      a: 1,
+      c: { e: 2 },
+      f: [{ h: 3 }],
+    });
+  });
+});
+
+describe("erro de fornecedor não derruba a execução", () => {
+  it("vira erro legível desta etapa", async () => {
+    const { resultado, tentativas } = await comReenvioUnico(
+      analiseAgenteSchema,
+      async () => JSON.stringify({ __erro_do_fornecedor: "400 schema inválido" }),
+    );
+    expect(resultado.ok).toBe(false);
+    expect(resultado.erro).toMatch(/o fornecedor recusou a chamada/);
+    expect(resultado.erro).toMatch(/400 schema inválido/);
+    expect(tentativas).toBe(2);
   });
 });

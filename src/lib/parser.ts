@@ -36,6 +36,12 @@ export function analisarResposta<T>(bruto: string, schema: ZodType<T>): Resultad
     return { ok: false, erro: `JSON inválido: ${(e as Error).message}` };
   }
 
+  // O orquestrador embrulha uma falha de fornecedor neste envelope, para que ela vire erro
+  // desta etapa em vez de derrubar a execução. Aqui ela vira uma mensagem legível.
+  if (json && typeof json === "object" && "__erro_do_fornecedor" in json) {
+    return { ok: false, erro: `o fornecedor recusou a chamada — ${String((json as Record<string, unknown>).__erro_do_fornecedor)}` };
+  }
+
   const r = schema.safeParse(json);
   if (!r.success) {
     const problemas = r.error.issues
@@ -67,7 +73,7 @@ export async function comReenvioUnico<T>(
    * Ver `CAMPOS_CARIMBADOS_PELO_SERVIDOR` em `schema-json.ts`.
    */
   carimbo?: () => Record<string, unknown>,
-): Promise<{ resultado: ResultadoParse<T>; tentativas: number }> {
+): Promise<{ resultado: ResultadoParse<T>; tentativas: number; erroDaPrimeira?: string }> {
   const analisar = (bruto: string) => {
     if (!carimbo) return analisarResposta(bruto, schema);
     try {
@@ -82,7 +88,7 @@ export async function comReenvioUnico<T>(
   if (primeira.ok) return { resultado: primeira, tentativas: 1 };
 
   const segunda = analisar(await chamar(mensagemDeReenvio(primeira.erro!)));
-  if (segunda.ok) return { resultado: segunda, tentativas: 2 };
+  if (segunda.ok) return { resultado: segunda, tentativas: 2, erroDaPrimeira: primeira.erro };
 
   return {
     resultado: {
@@ -90,5 +96,6 @@ export async function comReenvioUnico<T>(
       erro: `falhou duas vezes. Primeira: ${primeira.erro} | Segunda: ${segunda.erro}`,
     },
     tentativas: 2,
+    erroDaPrimeira: primeira.erro,
   };
 }
