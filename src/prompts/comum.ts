@@ -41,8 +41,11 @@ qual modelo atendeu. Se o schema os pedir, ignore-os.
 export const LEMBRETE_FINAL = `
 Antes de responder, confira:
 - "sintese" tem no máximo 600 caracteres? Conte. É o resumo, não o parecer.
-- "evidencias" tem pelo menos 3 itens, cada um com a origem (conta e exercício, ou documento e
-  página)?
+- "evidencias" tem pelo menos 3 itens, e a "origem" de CADA um traz o CÓDIGO da conta
+  (por exemplo "2.01.04") ou a página do documento ("p. 47")? Nomear a demonstração não basta:
+  "DFP consolidada, DRE_con" não permite conferir número nenhum. Em cálculo seu, cite as contas
+  que entraram na conta — "cálculo próprio: 2.01.04 + 2.02.01, exercício 2025" é origem;
+  "cálculo próprio a partir do balanço" não é.
 - "riscos" tem de 3 a 6 itens?
 - "verificacoes" está preenchido?
 Responda apenas com o JSON, sem cercas de código.

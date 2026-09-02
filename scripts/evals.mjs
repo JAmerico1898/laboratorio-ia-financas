@@ -20,7 +20,7 @@ const raiz = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // para reusar o orquestrador de produção em vez de duplicá-lo aqui.
 const { executarAnalise } = await import(pathToFileURL(resolve(raiz, "src/lib/orquestrador.ts")).href);
 const { ArmazemEmMemoria } = await import(pathToFileURL(resolve(raiz, "src/lib/armazem.ts")).href);
-const { FornecedorAnthropic } = await import(pathToFileURL(resolve(raiz, "src/lib/fornecedores/anthropic.ts")).href);
+const { FornecedorAnthropic, ESFORCO_PLANEJAMENTO } = await import(pathToFileURL(resolve(raiz, "src/lib/fornecedores/anthropic.ts")).href);
 const { FornecedorOpenAI } = await import(pathToFileURL(resolve(raiz, "src/lib/fornecedores/openai.ts")).href);
 
 const n = Number(process.argv[process.argv.indexOf("--execucoes") + 1]) || 5;
@@ -31,14 +31,27 @@ const dossie = JSON.parse(
 const adaptadores = {
   anthropic: new FornecedorAnthropic(process.env.MODEL_ESPECIALISTA, process.env.ANTHROPIC_API_KEY),
   contrarian: new FornecedorOpenAI(process.env.MODEL_CONTRARIAN, process.env.OPENAI_API_KEY),
+  // O planejamento organiza a análise, não a faz: esforço próprio (§3.2).
+  planejamento: new FornecedorAnthropic(
+    process.env.MODEL_SUPERVISOR,
+    process.env.ANTHROPIC_API_KEY,
+    ESFORCO_PLANEJAMENTO,
+  ),
 };
 
 /**
- * Origem aceitável: conta (singular ou plural), página de documento, ou nota explicativa.
- * A primeira versão só aceitava "conta N" e reprovava "contas 1.01 e 2.01" por estar no plural,
- * o que fazia o eval medir a redação da origem em vez da existência dela.
+ * Origem aceitável: um **código de conta** do plano padronizado (3.05, 2.01.05.02.09), uma página
+ * de documento, ou uma nota explicativa.
+ *
+ * Duas versões anteriores mediam a redação em vez da existência do endereço. A primeira exigia a
+ * palavra "conta" no singular e reprovava "contas 1.01 e 2.01". A segunda ainda exigia a palavra,
+ * e reprovava "cálculo próprio: 2.01.04(5.613,0)+2.02.01(685,0)…", que é o endereço mais preciso
+ * que uma evidência pode ter. O que importa é o código estar lá.
+ *
+ * Continua reprovando o que de fato não é endereço: "DFP consolidada, DRE_con" nomeia a aba, não
+ * a linha, e não permite conferir número nenhum.
  */
-const TEM_ORIGEM = /(contas?\s+[\d.]+|p\.\s*\d+|p[áa]gina\s*\d+|nota\s+explicativa)/i;
+const TEM_ORIGEM = /(\d\.\d{2}(\.\d{2})*|p\.\s*\d+|p[áa]gina\s*\d+|nota\s+explicativa)/i;
 
 const execucoes = [];
 let ultimoEstado = null;
@@ -65,10 +78,22 @@ for (let i = 0; i < n; i++) {
   const valoresDasEvidencias = new Set(
     evidencias.filter((e) => e.valor !== undefined).map((e) => Number(e.valor).toFixed(1)),
   );
+  // Um valor "tem lastro" quando algum agente o apurou — no campo `valor` de uma evidência ou no
+  // texto dela. O analista costuma escrever a série na afirmação ("2023=-22,0; 2024=1.582,0") e
+  // deixar `valor` vazio, e isso não é o supervisor inventando: é o supervisor citando.
+  const textoDasEvidencias = evidencias.map((e) => `${e.afirmacao} ${e.origem}`).join(" | ");
+  const temLastro = (v) => {
+    const n = Number(v);
+    if (valoresDasEvidencias.has(n.toFixed(1))) return true;
+    // Compara também pela grafia brasileira, com ponto de milhar: 15186 → "15.186".
+    const abs = Math.abs(n);
+    const comMilhar = abs.toLocaleString("pt-BR", { maximumFractionDigits: 1 });
+    return textoDasEvidencias.includes(comMilhar) || textoDasEvidencias.includes(String(abs));
+  };
+
   const valoresDoMemo = (memo?.riscos ?? [])
     .map((r) => r.evidencia?.valor)
-    .filter((v) => v !== undefined && v !== null)
-    .map((v) => Number(v).toFixed(1));
+    .filter((v) => v !== undefined && v !== null);
 
   // Diagnóstico: quais origens reprovaram, para o número significar alguma coisa.
   const origensReprovadas = evidencias
@@ -94,10 +119,21 @@ for (let i = 0; i < n; i++) {
     })),
     evidencias_com_origem: evidencias.filter((e) => TEM_ORIGEM.test(e.origem)).length,
     evidencias_total: evidencias.length,
-    valores_do_memo_sem_lastro: valoresDoMemo.filter((v) => !valoresDasEvidencias.has(v)).length,
+    valores_do_memo_sem_lastro: valoresDoMemo.filter((v) => !temLastro(v)).length,
+    valores_sem_lastro: valoresDoMemo.filter((v) => !temLastro(v)),
     valores_do_memo_total: valoresDoMemo.length,
+    // A metodologia manda reportar alavancagem em DUAS versões. O nome da ampla é estável; o da
+    // restrita varia — "restrita", "dívida financeira", "apenas empréstimos". Checar por palavra
+    // é frágil por natureza: isto é indício, não prova.
     alavancagem_nas_duas_versoes:
-      textoDasAnalises.includes("restrita") && textoDasAnalises.includes("ampla"),
+      textoDasAnalises.includes("ampla") &&
+      [
+        "restrita",
+        "dívida financeira",
+        "divida financeira",
+        "apenas empréstimos",
+        "somente empréstimos",
+      ].some((termo) => textoDasAnalises.includes(termo)),
     contrarian_com_objecao_com_evidencia: Boolean(
       contrarian?.divergencias?.length && contrarian.evidencias.length >= 3,
     ),

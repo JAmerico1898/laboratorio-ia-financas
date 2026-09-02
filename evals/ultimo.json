@@ -1,5 +1,5 @@
 {
-  "rodado_em": "2026-09-02T22:52:50.841Z",
+  "rodado_em": "2026-09-02T23:36:52.804Z",
   "modelos": {
     "supervisor": "claude-sonnet-5",
     "especialistas": "claude-sonnet-5",
@@ -11,13 +11,13 @@
     {
       "eval": "Toda evidência do memo tem origem (conta e exercício, ou documento e página)",
       "limiar": "100%",
-      "valor": "91.3%",
-      "passou": false
+      "valor": "100.0%",
+      "passou": true
     },
     {
       "eval": "Nenhum valor do memo é inexistente nas evidências dos agentes",
       "limiar": "100%",
-      "valor": "10 sem lastro",
+      "valor": "3 sem lastro",
       "passou": false
     },
     {
@@ -46,81 +46,81 @@
     }
   ],
   "custo": {
-    "media_usd": 2.6164,
+    "media_usd": 0.9887,
     "desvio_usd": 0,
-    "minimo_usd": 2.6164,
-    "maximo_usd": 2.6164
+    "minimo_usd": 0.9887,
+    "maximo_usd": 0.9887
   },
   "duracao": {
-    "media_ms": 255030,
-    "maxima_ms": 255030
+    "media_ms": 205225,
+    "maxima_ms": 205225
   },
   "execucoes": [
     {
       "execucao": 1,
       "classificacao": "R7",
-      "custo_usd": 2.6164324000000003,
-      "duracao_ms": 255030,
+      "custo_usd": 0.9887092000000001,
+      "duracao_ms": 205225,
       "chamadas": 7,
       "por_etapa": [
         {
           "etapa": "planejamento",
-          "s": 44.9,
-          "entrada": 206984,
-          "saida": 3244,
-          "usd": 0.4464
-        },
-        {
-          "etapa": "setorial",
-          "s": 87.1,
-          "entrada": 208215,
-          "saida": 7803,
-          "usd": 0.4945
+          "s": 25.2,
+          "entrada": 73024,
+          "saida": 1978,
+          "usd": 0.1658
         },
         {
           "etapa": "juridico_regulatorio",
-          "s": 97.1,
-          "entrada": 416631,
-          "saida": 8314,
-          "usd": 0.9164,
-          "reenviado": "não valida contra o schema — sintese: Too big: expected string to have <=600 characters"
+          "s": 28.2,
+          "entrada": 75977,
+          "saida": 2780,
+          "usd": 0.1798
+        },
+        {
+          "etapa": "setorial",
+          "s": 40.3,
+          "entrada": 75896,
+          "saida": 3822,
+          "usd": 0.19
         },
         {
           "etapa": "financeiro",
-          "s": 111.4,
-          "entrada": 212328,
-          "saida": 10490,
-          "usd": 0.5296
+          "s": 97.3,
+          "entrada": 79985,
+          "saida": 9681,
+          "usd": 0.2568
         },
         {
           "etapa": "contrarian",
           "s": 34.4,
-          "entrada": 157244,
-          "saida": 3448,
-          "usd": 0.0356
-        },
-        {
-          "etapa": "consolidação (sem contrarian)",
-          "s": 48.3,
-          "entrada": 16192,
-          "saida": 5050,
-          "usd": 0.0829
+          "entrada": 61960,
+          "saida": 3751,
+          "usd": 0.0169
         },
         {
           "etapa": "consolidação (com contrarian)",
-          "s": 64.4,
-          "entrada": 20563,
-          "saida": 7001,
-          "usd": 0.1111
+          "s": 47.2,
+          "entrada": 19670,
+          "saida": 5519,
+          "usd": 0.0945
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 48.4,
+          "entrada": 15661,
+          "saida": 5359,
+          "usd": 0.0849
         }
       ],
       "evidencias_com_origem": 21,
-      "evidencias_total": 23,
-      "valores_do_memo_sem_lastro": 10,
-      "valores_do_memo_total": 21,
+      "evidencias_total": 21,
+      "valores_do_memo_sem_lastro": 3,
+      "valores_do_memo_total": 4,
       "alavancagem_nas_duas_versoes": false,
       "contrarian_com_objecao_com_evidencia": true,
-      "verificacoes_presentes": true
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
     }
   ]
 }

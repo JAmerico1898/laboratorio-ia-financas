@@ -4,6 +4,7 @@
 import { describe, it, expect } from "vitest";
 import { executarAnalise, type EventoExecucao } from "@/lib/orquestrador";
 import { ArmazemEmMemoria } from "@/lib/armazem";
+import { FornecedorSimulado } from "@/lib/fornecedores/simulado";
 import {
   adaptadoresSimulados,
   dossieDeTeste,
@@ -181,5 +182,37 @@ describe("falha de um especialista (§10.3, caso 3)", () => {
     expect(estado.memo_com_contrarian).toBeDefined();
     expect(estado.memo_com_contrarian!.informacao_ausente.join(" ")).toMatch(/setorial/);
     expect(estado.estado).toBe("aguardando_decisao");
+  });
+});
+
+describe("esforço por papel (§3.2)", () => {
+  it("o planejamento usa o adaptador próprio quando existe", async () => {
+    const armazem = new ArmazemEmMemoria();
+    const base = adaptadoresSimulados(respostasCanonicas() as never);
+    const planejamento = new FornecedorSimulado({
+      fornecedor: "anthropic",
+      modelo: "claude-sonnet-5",
+      esforco: "low",
+      respostas: respostasCanonicas() as never,
+    });
+
+    const estado = await executarAnalise({
+      execucao_id: "exec-esforco",
+      dossie: dossieDeTeste,
+      incluir_contrarian: true,
+      adaptadores: { ...base, planejamento },
+      armazem,
+    });
+
+    const linha = (etapa: string) => estado.log.chamadas.find((c) => c.etapa === etapa)!;
+    expect(linha("planejamento").esforco).toBe("low");
+    // Quem analisa continua no esforço de análise.
+    expect(linha("financeiro").esforco).toBe("high");
+    expect(linha("consolidação (com contrarian)").esforco).toBe("high");
+  });
+
+  it("sem adaptador de planejamento, tudo cai no adaptador Claude comum", async () => {
+    const { estado } = await rodar(true);
+    expect(estado.log.chamadas.find((c) => c.etapa === "planejamento")!.esforco).toBe("high");
   });
 });

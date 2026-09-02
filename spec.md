@@ -154,7 +154,8 @@ Versões da família, casadas com aquele laboratório: **Next 16.2.1**, **React 
 
 | Papel | Fornecedor | Variável de ambiente | Valor | Determinismo |
 |---|---|---|---|---|
-| Supervisor | Anthropic | `MODEL_SUPERVISOR` | `claude-sonnet-5` | `effort: "medium"` |
+| Supervisor — planejamento | Anthropic | `MODEL_SUPERVISOR` | `claude-sonnet-5` | `effort: "low"` |
+| Supervisor — consolidação | Anthropic | `MODEL_SUPERVISOR` | `claude-sonnet-5` | `effort: "medium"` |
 | Analista financeiro | Anthropic | `MODEL_ESPECIALISTA` | `claude-sonnet-5` | `effort: "medium"` |
 | Analista setorial | Anthropic | `MODEL_ESPECIALISTA` | `claude-sonnet-5` | `effort: "medium"` |
 | Analista jurídico-regulatório | Anthropic | `MODEL_ESPECIALISTA` | `claude-sonnet-5` | `effort: "medium"` |
@@ -842,6 +843,7 @@ Aula 4 mostra **por que** um spec muda.
 | 19 | Esforço dos papéis Claude passa de `high` para `medium`, para caber no critério de 3 minutos da §13.1 | §3.2, §13.1 |
 | 20 | Os três releases de 4T saem do dossiê demo: eram 260 dos 387 mil caracteres e 2/3 do contexto de cada agente | §6.1 |
 | 21 | EBITDA passa a ser calculado do plano padronizado da CVM (3.05 + 6.01.01.03), com o ajustado da companhia declarado ausente | §5.4, §6.1 |
+| 22 | O **planejamento** roda em `effort: "low"`: ele organiza a análise, não a faz. Era o estágio mais lento do caminho crítico | §3.2, §13.1 |
 
 ### Pendências do autor
 

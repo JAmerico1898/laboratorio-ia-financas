@@ -37,10 +37,15 @@ export type EventoExecucao =
   | { tipo: "execucao_concluida" };
 
 export interface AdaptadoresExecucao {
-  /** Os quatro papéis Claude. */
+  /** Os papéis Claude que analisam ou consolidam. */
   anthropic: AdaptadorFornecedor;
   /** O contrarian, em outro fornecedor. */
   contrarian: AdaptadorFornecedor;
+  /**
+   * O planejamento, quando roda em esforço próprio. O supervisor não analisa nesta etapa: ele
+   * organiza. Omitido, cai em `anthropic`.
+   */
+  planejamento?: AdaptadorFornecedor;
 }
 
 export interface OpcoesExecucao {
@@ -183,7 +188,7 @@ export async function executarAnalise(opcoes: OpcoesExecucao): Promise<EstadoExe
   const planejamento = await etapa<PlanoDeAnalise>(
     "planejamento",
     "supervisor",
-    adaptadores.anthropic,
+    adaptadores.planejamento ?? adaptadores.anthropic,
     PROMPT_SUPERVISOR_PLANEJAMENTO,
     textoDossie,
     planoDeAnaliseSchema,

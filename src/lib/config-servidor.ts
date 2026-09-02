@@ -8,7 +8,7 @@
 
 import "server-only";
 
-import { FornecedorAnthropic } from "@/lib/fornecedores/anthropic";
+import { FornecedorAnthropic, ESFORCO_PLANEJAMENTO } from "@/lib/fornecedores/anthropic";
 import { FornecedorOpenAI } from "@/lib/fornecedores/openai";
 import { FornecedorSimulado } from "@/lib/fornecedores/simulado";
 import { respostasDemo } from "@/lib/fornecedores/respostas-demo";
@@ -57,6 +57,12 @@ export function adaptadoresReais(simularFalhaEm?: string): AdaptadoresExecucao {
       exigir("ANTHROPIC_API_KEY"),
     ),
     contrarian: new FornecedorOpenAI(exigir("MODEL_CONTRARIAN"), exigir("OPENAI_API_KEY")),
+    // O planejamento roda em esforço próprio: ele organiza a análise, não a faz (§3.2).
+    planejamento: new FornecedorAnthropic(
+      exigir("MODEL_SUPERVISOR"),
+      exigir("ANTHROPIC_API_KEY"),
+      ESFORCO_PLANEJAMENTO,
+    ),
   };
 }
 

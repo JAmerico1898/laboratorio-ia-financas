@@ -131,3 +131,14 @@ describe("os demais insumos da metodologia continuam no dossiê", () => {
     expect(fatos.map((f) => f.titulo).join(" ")).toMatch(/Homologacao Recuperacao Extrajudicial/);
   });
 });
+
+describe("o prompt exige o código da conta na origem", () => {
+  it("diz que nomear a demonstração não basta", () => {
+    expect(CONTAS_CVM).toMatch(/precisa conter o código da conta/);
+    expect(CONTAS_CVM).toContain("DFP consolidada, DRE_con");
+  });
+
+  it("mostra a forma de citar um cálculo próprio", () => {
+    expect(CONTAS_CVM).toMatch(/cálculo próprio: 3\.05 \(1\.343,0\) \+ 6\.01\.01\.03/);
+  });
+});

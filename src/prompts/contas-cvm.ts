@@ -16,8 +16,20 @@ export const CONTAS_CVM = `
 --- Como ler as demonstrações padronizadas da CVM ---
 
 O dossiê traz as demonstrações no plano de contas padronizado da CVM: cada linha é
-"conta | descrição | exercício | valor em R$ milhões". Use os códigos de conta abaixo ao citar a
-origem de cada número. A conta é o endereço; "DRE consolidada" sozinho não é endereço.
+"conta | descrição | exercício | valor em R$ milhões".
+
+**Toda origem que você escrever precisa conter o código da conta.** O código é o endereço; o nome
+da demonstração não é. "DFP consolidada, DRE_con" reprova — a aba tem centenas de linhas e
+ninguém consegue conferir o número a partir dela. As formas que valem:
+
+    "conta 2.01, exercício 2025"
+    "contas 1.01 e 2.01, exercício 2025"
+    "cálculo próprio: 2.01.04 + 2.02.01 + 2.01.05.02.09, exercício 2025"
+    "DFP 2025, p. 47"           (para nota explicativa)
+
+Quando o número for cálculo seu, cite as contas que entraram nele. Melhor ainda, cite os valores:
+"cálculo próprio: 3.05 (1.343,0) + 6.01.01.03 (1.037,0) = 2.380,0, exercício 2025" permite a quem
+lê refazer a conta sem abrir o dossiê.
 
 EBITDA — a definição que vale nesta análise:
 
