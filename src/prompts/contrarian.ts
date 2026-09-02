@@ -4,6 +4,7 @@
 
 import { PREAMBULO_COMUM, LEMBRETE_FINAL } from "@/prompts/comum";
 import { METODOLOGIA } from "@/prompts/curso/metodologia";
+import { CONTAS_CVM } from "@/prompts/contas-cvm";
 
 const PAPEL_CONTRARIAN = `
 Você é o revisor independente do comitê e trabalha para OUTRA instituição que a dos três analistas
@@ -28,5 +29,6 @@ export const PROMPT_CONTRARIAN = [
   PAPEL_CONTRARIAN,
   "--- Metodologia da instituição (Aula 3) ---",
   METODOLOGIA,
+  CONTAS_CVM,
   LEMBRETE_FINAL,
 ].join("\n\n");

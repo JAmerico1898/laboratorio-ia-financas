@@ -8,6 +8,7 @@
 import { PREAMBULO_COMUM, LEMBRETE_FINAL } from "@/prompts/comum";
 import { PROMPT_AULA1 } from "@/prompts/curso/prompt_aula1";
 import { METODOLOGIA } from "@/prompts/curso/metodologia";
+import { CONTAS_CVM } from "@/prompts/contas-cvm";
 
 const PAPEL_FINANCEIRO = `
 Você é analista de crédito sênior. Seu escopo é exclusivamente o que está nas demonstrações.
@@ -69,9 +70,10 @@ export const PROMPT_FINANCEIRO = [
   PROMPT_AULA1,
   MET,
   METODOLOGIA,
+  CONTAS_CVM,
   LEMBRETE_FINAL,
 ].join("\n\n");
 
-export const PROMPT_SETORIAL = [PREAMBULO_COMUM, PAPEL_SETORIAL, MET, METODOLOGIA, LEMBRETE_FINAL].join("\n\n");
+export const PROMPT_SETORIAL = [PREAMBULO_COMUM, PAPEL_SETORIAL, MET, METODOLOGIA, CONTAS_CVM, LEMBRETE_FINAL].join("\n\n");
 
-export const PROMPT_JURIDICO = [PREAMBULO_COMUM, PAPEL_JURIDICO, MET, METODOLOGIA, LEMBRETE_FINAL].join("\n\n");
+export const PROMPT_JURIDICO = [PREAMBULO_COMUM, PAPEL_JURIDICO, MET, METODOLOGIA, CONTAS_CVM, LEMBRETE_FINAL].join("\n\n");

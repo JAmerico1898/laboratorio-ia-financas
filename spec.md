@@ -6,12 +6,13 @@
 >
 > **Versão:** 1.2 — 2 de setembro de 2026 · **Autor:** José Américo · **Revisor do código:** Codex
 >
-> **O que mudou da 1.1 para a 1.2.** Sete decisões tomadas *durante* a construção, registradas na
-> §15.1. Cinco corrigem o que só a API real revelou: o identificador do contrarian
+> **O que mudou da 1.1 para a 1.2.** Nove decisões tomadas *durante* a construção, registradas na
+> §15.1. Sete corrigem o que só a API real revelou: o identificador do contrarian
 > (`gpt-5.6-luna`), o fato de ele **também** recusar `temperature`, o preço dele ser um décimo do
-> Claude, a necessidade de **enviar** o contrato em JSON Schema aos modelos, e o esforço passar de
-> `high` para `medium` para caber no critério de 3 minutos. A primeira execução real do aplicativo
-> custou US$ 4,64 e não produziu memo por causa da quarta.
+> Claude, a necessidade de **enviar** o contrato em JSON Schema aos modelos, o esforço passando de
+> `high` para `medium`, e a saída dos três releases de 4T do dossiê demo — dois terços do contexto
+> de cada agente —, com o EBITDA passando a ser calculado do plano padronizado da CVM. A primeira
+> execução real do aplicativo custou US$ 4,64 e não produziu memo por causa da quarta.
 >
 > **O que mudou da 1.0 para a 1.1.** Doze decisões de construção foram tomadas antes da primeira
 > linha de código e estão registradas na seção 15. Quatro delas corrigem exigências da 1.0 que a
@@ -490,11 +491,34 @@ Cabeçalho curto explicando o que o app é (três linhas) e o formulário:
 
 O dossiê demo é **curado e pré-extraído**, comitado como `public/demo/dossie-casas-bahia.json`:
 balanço, DRE e fluxo de caixa dos exercícios de 2023 a 2025 extraídos da planilha da Aula 2 (com
-conta e exercício preservados), os sete fatos relevantes do evento de crédito por extenso, os três
-releases de 4T e os indicadores dos pares do varejo. Os três `DFP_*.pdf` (5 MB cada, centenas de
-páginas) **não** entram como texto integral — só como referência de página nas evidências. Enviar
-os três inteiros a cada agente ameaçaria o critério 13.1 (memo em menos de 3 minutos) e o teto de
-custo da §8.6, sem acrescentar nada que a planilha já não traga de forma estruturada.
+conta e exercício preservados), os sete fatos relevantes do evento de crédito por extenso e os
+indicadores dos pares do varejo. Os três `DFP_*.pdf` (5 MB cada, centenas de páginas) **não**
+entram como texto integral — só como referência de página nas evidências. Enviar os três inteiros
+a cada agente ameaçaria o critério 13.1 (memo em menos de 3 minutos) e o teto de custo da §8.6,
+sem acrescentar nada que a planilha já não traga de forma estruturada.
+
+**Correção à versão 1.1 — os três releases de 4T saíram do dossiê.** A 1.1 os incluía. Medido em
+2 de setembro de 2026, com eles cada agente recebia **207 mil tokens** — não os 97 mil que a
+conta de "quatro caracteres por token" sugeria, porque tabela numérica tokeniza a menos de dois —
+e a execução completa levava **255 s** e custava **US$ 2,62**. Os três respondiam por 260 dos 387
+mil caracteres e eram o material menos estruturado do conjunto: prosa de relações com
+investidores, com tabelas achatadas pela extração de PDF. Sem eles o dossiê tem 126 mil
+caracteres e ~32 mil tokens por agente.
+
+O que se perde é o **EBITDA ajustado divulgado pela companhia**, que a §5.4 manda reportar ao
+lado do recalculado. Isso não é suprido em silêncio, em duas frentes:
+
+1. Um módulo de app, `src/prompts/contas-cvm.ts`, define o EBITDA a partir do plano padronizado —
+   **conta 3.05 (resultado antes do resultado financeiro e dos tributos) + conta 6.01.01.03
+   (depreciação e amortização, da DFC)** — e mapeia em quais contas mora cada insumo da
+   metodologia, inclusive as duas versões de dívida. Sem uma definição única, cada agente montaria
+   a sua e o supervisor registraria como divergência de análise o que seria divergência de
+   definição.
+2. O mesmo módulo e o documento de referência do dossiê mandam registrar em `informacao_ausente`
+   que o ajustado da companhia não está disponível e que, por isso, os ajustes dela não puderam
+   ser confrontados. É exatamente o comportamento que a §5.4 pede quando o dado falta.
+
+Os releases continuam no dossiê da Aula 2, em `02_Dossie_Caso/dossie/`.
 
 Fica **um único** caso de demonstração, com os dados conferidos. A planilha adulterada da Aula 2
 (`casas_bahia_DFP_bruto_com_erro.xlsx`) permanece assunto exclusivo daquela aula e não é embarcada
@@ -816,6 +840,8 @@ Aula 4 mostra **por que** um spec muda.
 | 17 | O contrato em JSON Schema passa a ser **enviado** aos dois fornecedores por saída estruturada; sem isso o modelo inventa a própria forma | §4, §5.1 |
 | 18 | `modelo`, `fornecedor` e os campos de entrada do memo são carimbados pelo servidor, não pedidos ao modelo | §4 |
 | 19 | Esforço dos papéis Claude passa de `high` para `medium`, para caber no critério de 3 minutos da §13.1 | §3.2, §13.1 |
+| 20 | Os três releases de 4T saem do dossiê demo: eram 260 dos 387 mil caracteres e 2/3 do contexto de cada agente | §6.1 |
+| 21 | EBITDA passa a ser calculado do plano padronizado da CVM (3.05 + 6.01.01.03), com o ajustado da companhia declarado ausente | §5.4, §6.1 |
 
 ### Pendências do autor
 

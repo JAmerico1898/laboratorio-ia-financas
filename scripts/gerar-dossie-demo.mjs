@@ -112,18 +112,20 @@ for (const arquivo of fatos) {
   });
 }
 
-// 3. Os três releases de resultado do 4T.
-const releases = readdirSync(origem)
-  .filter((f) => f.startsWith("release_") && f.endsWith(".pdf"))
-  .sort();
-for (const arquivo of releases) {
-  const data = arquivo.slice(8, 18);
-  documentos.push({
-    titulo: `Release de resultado — ${basename(arquivo, ".pdf").slice(19).replace(/_/g, " ")}`,
-    origem: `CVM, documento ${arquivo} (divulgado em ${data})`,
-    texto: await textoDoPdf(resolve(origem, arquivo)),
-  });
-}
+// 3. Os três releases de resultado do 4T ficam FORA do dossiê que alimenta os agentes.
+//
+// Medido em 2 de setembro de 2026: com eles, cada agente recebia 207 mil tokens e a execução
+// completa levava 255 s — acima dos 3 minutos do critério §13.1 — e custava US$ 2,62. Os três
+// respondiam por 260 dos 387 mil caracteres e eram o material menos estruturado do conjunto:
+// prosa de relações com investidores, com tabelas achatadas pela extração de PDF.
+//
+// O que se perde com eles é o EBITDA ajustado divulgado pela companhia. Isso não é suprido em
+// silêncio: `src/prompts/contas-cvm.ts` define o EBITDA a partir das contas padronizadas
+// (3.05 + 6.01.01.03) e manda o analista registrar em "informacao_ausente" que o ajustado da
+// companhia não está disponível — o que é exatamente o comportamento que a §5.4 pede quando o
+// dado falta.
+//
+// Os arquivos continuam no dossiê da Aula 2, em ../02_Dossie_Caso/dossie/.
 
 // 4. Indicadores dos pares do varejo.
 const pares = XLSX.read(readFileSync(resolve(origem, "pares_varejo_DFP_bruto.xlsx")));
@@ -144,12 +146,20 @@ documentos.push({
   origem: "CVM, DFP_2023/2024/2025_GRUPO_CASAS_BAHIA_S_A.pdf",
   texto: [
     "As demonstrações financeiras padronizadas completas dos três exercícios, com as notas",
-    "explicativas e o relatório do auditor, constam do dossiê como PDF. Elas NÃO estão",
-    "transcritas aqui: o que foi extraído delas são as contas padronizadas acima.",
+    "explicativas e o relatório do auditor, constam do dossiê da instituição como PDF. Elas NÃO",
+    "estão transcritas aqui: o que foi extraído delas são as contas padronizadas acima.",
     "",
-    "Ao citar uma nota explicativa, use a forma \"DFP 2025, p. N\". Se o número que você precisa",
-    "não estiver nas contas padronizadas nem nos fatos relevantes nem nos releases acima, ele",
-    "não está disponível para esta análise: registre em \"informacao_ausente\".",
+    "Ao citar uma nota explicativa, use a forma \"DFP 2025, p. N\".",
+    "",
+    "O QUE ESTE DOSSIÊ NÃO CONTÉM, e que você deve registrar em \"informacao_ausente\" ao",
+    "precisar:",
+    "- os releases de resultado dos quartos trimestres, e portanto o EBITDA ajustado, a dívida",
+    "  líquida ajustada e as demais medidas não contábeis divulgadas pela companhia;",
+    "- o cronograma de amortização da dívida reestruturada;",
+    "- a abertura, dentro de fornecedores, do saldo já pago por banco em risco sacado.",
+    "",
+    "Se o número que você precisa não estiver nas contas padronizadas, nos fatos relevantes ou no",
+    "dossiê de pares, ele não está disponível para esta análise. Não estime.",
   ].join("\n"),
 });
 
