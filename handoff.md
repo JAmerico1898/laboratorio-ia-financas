@@ -34,8 +34,9 @@ não deve ser editada.
 
 | O quê | Resultado |
 |---|---|
-| `npm test` | **142/142 verdes** em 11 arquivos |
+| `npm test` | **190/190 verdes** em 14 arquivos |
 | `npm run test:e2e` | **7/7 verdes**, fornecedores simulados |
+| CI no GitHub Actions | **verde nos 13 passos** |
 | `npm run build` | compila; 6 telas e 5 rotas de API |
 | `npm run lint` / `tsc --noEmit` | limpos |
 | hook de pre-commit | passa no repo limpo e **aborta** com chave em código de cliente (testado nos dois sentidos) |

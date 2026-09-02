@@ -33,8 +33,12 @@ const adaptadores = {
   contrarian: new FornecedorOpenAI(process.env.MODEL_CONTRARIAN, process.env.OPENAI_API_KEY),
 };
 
-/** Toda evidência do memo tem origem no formato "conta e exercício" ou "documento e página". */
-const TEM_ORIGEM = /(conta\s+[\d.]+|p\.\s*\d+|exerc[íi]cio\s+\d{4})/i;
+/**
+ * Origem aceitável: conta (singular ou plural), página de documento, ou nota explicativa.
+ * A primeira versão só aceitava "conta N" e reprovava "contas 1.01 e 2.01" por estar no plural,
+ * o que fazia o eval medir a redação da origem em vez da existência dela.
+ */
+const TEM_ORIGEM = /(contas?\s+[\d.]+|p\.\s*\d+|p[áa]gina\s*\d+|nota\s+explicativa)/i;
 
 const execucoes = [];
 let ultimoEstado = null;
@@ -53,13 +57,23 @@ for (let i = 0; i < n; i++) {
   const evidencias = analises.flatMap((a) => a.evidencias);
   const contrarian = analises.find((a) => a.papel === "contrarian");
 
+  // O memo não pode citar um VALOR que nenhum agente apurou. A comparação certa é entre valores
+  // afirmados dos dois lados — as evidências dos riscos do memo contra as evidências das
+  // análises. O quadro de indicadores fica de fora de propósito: ali estão índices CALCULADOS a
+  // partir das evidências (liquidez 1,1 vem de 13.242,0 ÷ 12.108,0), e exigir que 1,1 apareça
+  // como evidência seria exigir que o memo não calculasse nada.
   const valoresDasEvidencias = new Set(
     evidencias.filter((e) => e.valor !== undefined).map((e) => Number(e.valor).toFixed(1)),
   );
-  const valoresDoMemo = (memo?.quadro_indicadores ?? [])
-    .flatMap((q) => [q.v2023, q.v2024, q.v2025])
+  const valoresDoMemo = (memo?.riscos ?? [])
+    .map((r) => r.evidencia?.valor)
     .filter((v) => v !== undefined && v !== null)
     .map((v) => Number(v).toFixed(1));
+
+  // Diagnóstico: quais origens reprovaram, para o número significar alguma coisa.
+  const origensReprovadas = evidencias
+    .filter((e) => !TEM_ORIGEM.test(e.origem))
+    .map((e) => e.origem);
 
   const textoDasAnalises = JSON.stringify(analises).toLowerCase();
 
