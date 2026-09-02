@@ -12,3 +12,6 @@ playwright-report/
 test-results/
 coverage/
 /.playwright-cache/
+
+# evidência bruta da última execução real, útil para auditar sem gastar outra
+evals/ultima-execucao.json

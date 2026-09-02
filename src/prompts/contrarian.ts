@@ -2,7 +2,7 @@
  * Contrarian — revisor independente, em outro fornecedor (spec §5.7).
  */
 
-import { PREAMBULO_COMUM } from "@/prompts/comum";
+import { PREAMBULO_COMUM, LEMBRETE_FINAL } from "@/prompts/comum";
 import { METODOLOGIA } from "@/prompts/curso/metodologia";
 
 const PAPEL_CONTRARIAN = `
@@ -28,4 +28,5 @@ export const PROMPT_CONTRARIAN = [
   PAPEL_CONTRARIAN,
   "--- Metodologia da instituição (Aula 3) ---",
   METODOLOGIA,
+  LEMBRETE_FINAL,
 ].join("\n\n");

@@ -37,6 +37,7 @@ const adaptadores = {
 const TEM_ORIGEM = /(conta\s+[\d.]+|p\.\s*\d+|exerc[íi]cio\s+\d{4})/i;
 
 const execucoes = [];
+let ultimoEstado = null;
 for (let i = 0; i < n; i++) {
   process.stdout.write(`execução ${i + 1}/${n}… `);
   const estado = await executarAnalise({
@@ -46,6 +47,7 @@ for (let i = 0; i < n; i++) {
     adaptadores,
     armazem: new ArmazemEmMemoria(),
   });
+  ultimoEstado = estado;
   const memo = estado.memo_com_contrarian;
   const analises = estado.analises;
   const evidencias = analises.flatMap((a) => a.evidencias);
@@ -86,9 +88,14 @@ for (let i = 0; i < n; i++) {
       contrarian?.divergencias?.length && contrarian.evidencias.length >= 3,
     ),
     verificacoes_presentes: analises.every((a) => a.verificacoes !== undefined),
+    origens_reprovadas: [...new Set(origensReprovadas)].slice(0, 10),
   });
   console.log(`${memo?.classificacao ?? "sem memo"} · US$ ${estado.log.custo_total_usd.toFixed(4)} · ${(estado.log.duracao_ms / 1000).toFixed(0)}s`);
   imprimirEtapas(estado.log.chamadas);
+  if (origensReprovadas.length) {
+    console.log(`    origens sem conta/página (${origensReprovadas.length}):`);
+    for (const o of [...new Set(origensReprovadas)].slice(0, 5)) console.log(`      · ${o}`);
+  }
 }
 
 const faixas = ["R1", "R2", "R3", "R4", "R5", "R6", "R7"];
@@ -161,6 +168,12 @@ const resultado = {
 };
 
 mkdirSync(resolve(raiz, "evals"), { recursive: true });
+if (ultimoEstado) {
+  writeFileSync(
+    resolve(raiz, "evals/ultima-execucao.json"),
+    JSON.stringify(ultimoEstado, null, 2) + String.fromCharCode(10),
+  );
+}
 writeFileSync(resolve(raiz, "evals/ultimo.json"), JSON.stringify(resultado, null, 2) + "\n");
 
 console.log("");

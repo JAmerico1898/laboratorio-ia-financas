@@ -5,7 +5,7 @@
  * módulos do curso de que aquele papel precisa. Nada de montagem dinâmica engenhosa (§5.8).
  */
 
-import { PREAMBULO_COMUM } from "@/prompts/comum";
+import { PREAMBULO_COMUM, LEMBRETE_FINAL } from "@/prompts/comum";
 import { PROMPT_AULA1 } from "@/prompts/curso/prompt_aula1";
 import { METODOLOGIA } from "@/prompts/curso/metodologia";
 
@@ -69,8 +69,9 @@ export const PROMPT_FINANCEIRO = [
   PROMPT_AULA1,
   MET,
   METODOLOGIA,
+  LEMBRETE_FINAL,
 ].join("\n\n");
 
-export const PROMPT_SETORIAL = [PREAMBULO_COMUM, PAPEL_SETORIAL, MET, METODOLOGIA].join("\n\n");
+export const PROMPT_SETORIAL = [PREAMBULO_COMUM, PAPEL_SETORIAL, MET, METODOLOGIA, LEMBRETE_FINAL].join("\n\n");
 
-export const PROMPT_JURIDICO = [PREAMBULO_COMUM, PAPEL_JURIDICO, MET, METODOLOGIA].join("\n\n");
+export const PROMPT_JURIDICO = [PREAMBULO_COMUM, PAPEL_JURIDICO, MET, METODOLOGIA, LEMBRETE_FINAL].join("\n\n");

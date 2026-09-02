@@ -30,3 +30,20 @@ Limites que o schema não expressa e que a validação cobra:
 Você NÃO preenche "modelo" nem "fornecedor": esses campos são carimbados pelo servidor, que sabe
 qual modelo atendeu. Se o schema os pedir, ignore-os.
 `.trim();
+
+/**
+ * Lembrete final, colocado DEPOIS dos módulos do curso em cada prompt.
+ *
+ * Não é redundância: na primeira execução real, uma análise reprovou por síntese de mais de 600
+ * caracteres, mesmo com o limite enunciado no preâmbulo. Entre o preâmbulo e a resposta há mais
+ * de mil linhas de metodologia. Este bloco é a última coisa que o modelo lê.
+ */
+export const LEMBRETE_FINAL = `
+Antes de responder, confira:
+- "sintese" tem no máximo 600 caracteres? Conte. É o resumo, não o parecer.
+- "evidencias" tem pelo menos 3 itens, cada um com a origem (conta e exercício, ou documento e
+  página)?
+- "riscos" tem de 3 a 6 itens?
+- "verificacoes" está preenchido?
+Responda apenas com o JSON, sem cercas de código.
+`.trim();

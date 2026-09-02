@@ -2,7 +2,7 @@
  * Supervisor — planejamento e consolidação (spec §5.2 e §5.3).
  */
 
-import { PREAMBULO_COMUM } from "@/prompts/comum";
+import { PREAMBULO_COMUM, LEMBRETE_FINAL } from "@/prompts/comum";
 import { METODOLOGIA } from "@/prompts/curso/metodologia";
 import { MODELO_CREDIT_MEMO } from "@/prompts/curso/modelo_credit_memo";
 
@@ -54,6 +54,7 @@ export const PROMPT_SUPERVISOR_PLANEJAMENTO = [
   PAPEL_PLANEJAMENTO,
   "--- Metodologia da instituição (Aula 3) ---",
   METODOLOGIA,
+  LEMBRETE_FINAL,
 ].join("\n\n");
 
 export const PROMPT_SUPERVISOR_CONSOLIDACAO = [
@@ -63,6 +64,7 @@ export const PROMPT_SUPERVISOR_CONSOLIDACAO = [
   METODOLOGIA,
   "--- Modelo de credit memo (Aula 3) ---",
   MODELO_CREDIT_MEMO,
+  LEMBRETE_FINAL,
 ].join("\n\n");
 
 export const PROMPT_SUPERVISOR_CONSOLIDACAO_SEM_CONTRARIAN = [
@@ -72,4 +74,5 @@ export const PROMPT_SUPERVISOR_CONSOLIDACAO_SEM_CONTRARIAN = [
   METODOLOGIA,
   "--- Modelo de credit memo (Aula 3) ---",
   MODELO_CREDIT_MEMO,
+  LEMBRETE_FINAL,
 ].join("\n\n");

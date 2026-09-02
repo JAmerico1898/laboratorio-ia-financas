@@ -4,7 +4,14 @@
 > Claude*. Este documento é a entrada do **claude-code**: ele deve bastar para construir o
 > aplicativo sem adivinhar. O que não estiver aqui, pergunte antes de implementar.
 >
-> **Versão:** 1.1 — 2 de setembro de 2026 · **Autor:** José Américo · **Revisor do código:** Codex
+> **Versão:** 1.2 — 2 de setembro de 2026 · **Autor:** José Américo · **Revisor do código:** Codex
+>
+> **O que mudou da 1.1 para a 1.2.** Sete decisões tomadas *durante* a construção, registradas na
+> §15.1. Cinco corrigem o que só a API real revelou: o identificador do contrarian
+> (`gpt-5.6-luna`), o fato de ele **também** recusar `temperature`, o preço dele ser um décimo do
+> Claude, a necessidade de **enviar** o contrato em JSON Schema aos modelos, e o esforço passar de
+> `high` para `medium` para caber no critério de 3 minutos. A primeira execução real do aplicativo
+> custou US$ 4,64 e não produziu memo por causa da quarta.
 >
 > **O que mudou da 1.0 para a 1.1.** Doze decisões de construção foram tomadas antes da primeira
 > linha de código e estão registradas na seção 15. Quatro delas corrigem exigências da 1.0 que a
@@ -146,10 +153,10 @@ Versões da família, casadas com aquele laboratório: **Next 16.2.1**, **React 
 
 | Papel | Fornecedor | Variável de ambiente | Valor | Determinismo |
 |---|---|---|---|---|
-| Supervisor | Anthropic | `MODEL_SUPERVISOR` | `claude-sonnet-5` | `effort: "high"` |
-| Analista financeiro | Anthropic | `MODEL_ESPECIALISTA` | `claude-sonnet-5` | `effort: "high"` |
-| Analista setorial | Anthropic | `MODEL_ESPECIALISTA` | `claude-sonnet-5` | `effort: "high"` |
-| Analista jurídico-regulatório | Anthropic | `MODEL_ESPECIALISTA` | `claude-sonnet-5` | `effort: "high"` |
+| Supervisor | Anthropic | `MODEL_SUPERVISOR` | `claude-sonnet-5` | `effort: "medium"` |
+| Analista financeiro | Anthropic | `MODEL_ESPECIALISTA` | `claude-sonnet-5` | `effort: "medium"` |
+| Analista setorial | Anthropic | `MODEL_ESPECIALISTA` | `claude-sonnet-5` | `effort: "medium"` |
+| Analista jurídico-regulatório | Anthropic | `MODEL_ESPECIALISTA` | `claude-sonnet-5` | `effort: "medium"` |
 | Contrarian | OpenAI | `MODEL_CONTRARIAN` | `gpt-5.6-luna` | padrão do modelo (1,0) |
 
 **Correção à versão 1.1 — o contrarian foi confirmado, e ele também não aceita `temperature`.**
@@ -184,9 +191,19 @@ modo, em três camadas:
 **Correção à versão 1.0 — `temperature` foi removida.** A 1.0 fixava `temperature` 0 para os
 especialistas e o supervisor e 0,7 para o contrarian. Nos modelos Claude atuais (Sonnet 5, Opus 5
 e toda a família 4.6+) o parâmetro `temperature` foi **removido e devolve HTTP 400**. O controle
-equivalente é `output_config.effort`, com níveis de `low` a `max`. Os quatro papéis Claude usam
-`effort: "high"`. O contrarian roda em outro fornecedor, onde `temperature` continua existindo, e
-mantém **0,7** — a variabilidade permanece exatamente onde o objetivo é gerar objeções.
+equivalente é `output_config.effort`, com níveis de `low` a `max`.
+
+**Correção à versão 1.1 — o esforço passou de `high` para `medium`.** A 1.1 fixava `"high"` nos
+quatro papéis Claude. Medido em 2 de setembro de 2026, uma chamada de especialista em `"high"`
+levou **70 s e 351 s** em duas medições; em `"low"`, 19,5 s, com análise válida. A execução tem
+quatro estágios sequenciais (planejamento → especialistas em paralelo → contrarian →
+consolidações em paralelo), e mesmo o melhor caso de `"high"` não cabe nos 3 minutos do critério
+§13.1. Decisão do autor: **`effort: "medium"`**. A variável de ambiente `ESFORCO_CLAUDE` existe
+para o ensaio comparar os níveis sem alterar código, e o padrão do código é o que esta tabela diz.
+
+O contrarian **também** não aceita `temperature` — ver a correção acima. Ele roda no padrão do
+modelo, 1,0, que é mais variável que os 0,7 que a 1.1 pretendia: a variabilidade permanece
+exatamente onde o objetivo é gerar objeções.
 
 O campo `temperatura` do `LogExecucao` passa a se chamar `esforco` e é `string | number`: o nível
 de esforço nos papéis Claude, a temperatura no contrarian. A coluna correspondente da tela de log
@@ -796,6 +813,9 @@ Aula 4 mostra **por que** um spec muda.
 | 14 | `gpt-5.6-luna` **também** devolve 400 para `temperature` — o parâmetro é omitido e o modelo roda no padrão 1,0 | §3.2 |
 | 15 | O contrarian custa 1/10 do Claude por token; a paridade de preço que a 1.1 supunha não existe | §9 |
 | 16 | A paleta de gráficos da §2 vive em `src/config/graficos.ts`, e não no `globals.css`, que é cópia verbatim | §2, §10.5 |
+| 17 | O contrato em JSON Schema passa a ser **enviado** aos dois fornecedores por saída estruturada; sem isso o modelo inventa a própria forma | §4, §5.1 |
+| 18 | `modelo`, `fornecedor` e os campos de entrada do memo são carimbados pelo servidor, não pedidos ao modelo | §4 |
+| 19 | Esforço dos papéis Claude passa de `high` para `medium`, para caber no critério de 3 minutos da §13.1 | §3.2, §13.1 |
 
 ### Pendências do autor
 
