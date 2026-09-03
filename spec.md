@@ -664,8 +664,29 @@ somam, e que "colocar o revisor em outro fornecedor" pode custar quase nada.
 O log exibe o custo em dólares e o equivalente em reais por uma taxa de câmbio fixa também
 declarada em `precos.ts` (com data). Câmbio estimado é melhor que câmbio invisível.
 
-**Medição a fazer antes de fechar a proposta comercial:** dez execuções completas do caso Casas
-Bahia, registrando o custo de cada uma. A média e o desvio entram no item de ressarcimento.
+**Medição feita em 2 de setembro de 2026.** Dez execuções completas do caso Casas Bahia, com o
+dossiê já sem os releases de 4T, `effort: "medium"` nos papéis que analisam e `"low"` no
+planejamento. Sete chamadas em todas as dez, nenhum erro, um único reenvio em setenta chamadas.
+
+| | Custo por execução (US$) | Duração (s) |
+|---|---|---|
+| Média | **0,9737** | 162,7 |
+| Desvio padrão | **0,0591** | — |
+| Mínimo | 0,9238 | 143 |
+| Mediana | 0,9744 | 161 |
+| Máximo | 1,1404 | 196 |
+
+Distribuição das durações, em segundos: 143 · 146 · 148 · 154 · 159 · 161 · 172 · 173 · 174 · 196.
+
+**Para o item de ressarcimento:** US$ 0,97 por execução, com desvio de US$ 0,06. Um teto de
+**US$ 1,20 por execução** cobre a cauda observada com folga — a execução mais cara da amostra
+custou US$ 1,14, e foi justamente a única que precisou de reenvio. O teto mensal de US$ 50 da
+§8.6 comporta cerca de **50 execuções**, o que dá margem confortável para ensaios e para a aula.
+
+O custo é dominado pelo contexto de entrada: os quatro papéis Claude que leem o dossiê inteiro
+respondem por cerca de 85% do total, e o contrarian, que lê o dossiê **mais** as três análises,
+custa US$ 0,016 — 1,7% da execução. É o dado de aula da §9: pôr o revisor independente em outro
+fornecedor custa quase nada, e o que pesa é quanto contexto cada agente recebe.
 
 ---
 
@@ -779,6 +800,10 @@ aparecer em código de cliente é o exemplo a mostrar.
 O aplicativo está pronto quando:
 
 1. Uma pessoa que nunca o viu carrega o caso de demonstração e chega ao memo em menos de 3 minutos.
+   **Medido em 10 execuções (2 de setembro de 2026): mediana de 161 s, e 9 das 10 abaixo dos
+   180 s.** A única que passou levou 196 s, e foi a única com reenvio. O critério é atendido na
+   ampla maioria das vezes, não em todas — quem for demonstrar ao vivo deve saber que existe uma
+   cauda de ~20 s acima do limite, e que o plano B da §13.10 é o vídeo gravado.
 2. A tela de execução mostra os três especialistas rodando em paralelo, com o contrarian esperando.
 3. O JSON completo de cada agente é visível na interface, sem abrir o console do navegador.
 4. O memo pode ser exibido com e sem contrarian sem nova chamada de API.
@@ -851,7 +876,7 @@ Aula 4 mostra **por que** um spec muda.
 |---|---|---|
 | 1 | Identificador do modelo contrarian e `OPENAI_API_KEY` | **resolvida** — `gpt-5.6-luna`, confirmado na Models API |
 | 2 | `ANTHROPIC_API_KEY` | **resolvida** |
-| 3 | `vercel login` e provisionamento do KV | **aberta** — fluxo de dispositivo, interativo; só o autor pode rodar |
+| 3 | `vercel login` e provisionamento do KV | **resolvida** — app no ar, `/api/saude` com `ok: true` e `armazem_duravel: true` |
 | 4 | Tornar o repositório público | **resolvida** — público desde 2 de setembro de 2026 |
-| 5 | Medição de custo: dez execuções completas (§9) | **aberta** — depende de autorização de gasto |
+| 5 | Medição de custo: dez execuções completas (§9) | **resolvida** — US$ 0,9737 de média, desvio US$ 0,0591; ver §9 |
 | 6 | Vídeo de 5 minutos (§13.10) | **aberta** — depende do app publicado |

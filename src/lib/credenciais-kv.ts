@@ -29,7 +29,9 @@ const CANONICOS = {
  */
 const PROIBIDOS = [/READ_ONLY/i];
 
-function procurar(nomes: readonly string[], ambiente: NodeJS.ProcessEnv): string | undefined {
+type Ambiente = Record<string, string | undefined>;
+
+function procurar(nomes: readonly string[], ambiente: Ambiente): string | undefined {
   const util = (nome: string) =>
     !PROIBIDOS.some((p) => p.test(nome)) && Boolean(ambiente[nome]?.trim());
 
@@ -52,7 +54,7 @@ export interface CredenciaisKV {
 }
 
 /** Devolve as credenciais quando as duas existem e têm valor; `null` caso contrário. */
-export function credenciaisKV(ambiente: NodeJS.ProcessEnv = process.env): CredenciaisKV | null {
+export function credenciaisKV(ambiente: Ambiente = process.env): CredenciaisKV | null {
   const url = procurar(CANONICOS.url, ambiente);
   const token = procurar(CANONICOS.token, ambiente);
   return url && token ? { url: url.replace(/\/+$/, ""), token } : null;

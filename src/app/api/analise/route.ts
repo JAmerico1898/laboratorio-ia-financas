@@ -6,6 +6,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { waitUntil } from "@vercel/functions";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -114,7 +115,12 @@ export async function POST(req: Request) {
   registrarExecucao(ip);
 
   // Dispara e não espera: o cliente acompanha por SSE. Um erro aqui não pode derrubar a rota.
-  void executarAnalise({
+  //
+  // `waitUntil` NÃO é detalhe: sem ele a orquestração não acontece em produção. A Vercel congela
+  // a instância assim que a resposta sai, e um `void promessa` morre no 202 — medido em
+  // 2 de setembro de 2026, a execução ficava oito minutos em "aguardando", com zero chamadas no
+  // log. `waitUntil` mantém a função viva até a promessa terminar, dentro do `maxDuration`.
+  const execucao = executarAnalise({
     execucao_id,
     dossie,
     incluir_contrarian,
@@ -127,13 +133,19 @@ export async function POST(req: Request) {
     aoEvento: (evento) => publicar(execucao_id, evento),
   })
     .then((estado) => registrarCusto(estado.log.custo_total_usd))
-    .catch((e: unknown) => {
-    publicar(execucao_id, {
-      tipo: "agente_falhou",
-      agente: "supervisor",
-      erro: e instanceof Error ? e.message : String(e),
+    .catch(async (e: unknown) => {
+      const erro = e instanceof Error ? e.message : String(e);
+      publicar(execucao_id, { tipo: "agente_falhou", agente: "supervisor", erro });
+      // Marca a execução como falha no armazém: sem isto a tela ficaria "executando" para sempre.
+      const estado = await armazem().ler(execucao_id);
+      if (estado) {
+        estado.estado = "erro";
+        estado.agentes.supervisor = { estado: "erro", erro };
+        await armazem().salvar(estado);
+      }
     });
-  });
+
+  waitUntil(execucao);
 
   return NextResponse.json({ execucao_id }, { status: 202 });
 }

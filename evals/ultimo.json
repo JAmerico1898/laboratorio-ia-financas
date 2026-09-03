@@ -1,11 +1,11 @@
 {
-  "rodado_em": "2026-09-02T23:36:52.804Z",
+  "rodado_em": "2026-09-03T00:50:37.491Z",
   "modelos": {
     "supervisor": "claude-sonnet-5",
     "especialistas": "claude-sonnet-5",
     "contrarian": "gpt-5.6-luna"
   },
-  "execucoes_realizadas": 1,
+  "execucoes_realizadas": 10,
   "todos_os_limiares_atendidos": false,
   "limiares": [
     {
@@ -17,14 +17,14 @@
     {
       "eval": "Nenhum valor do memo é inexistente nas evidências dos agentes",
       "limiar": "100%",
-      "valor": "3 sem lastro",
+      "valor": "7 sem lastro",
       "passou": false
     },
     {
       "eval": "Alavancagem aparece nas duas versões (restrita e ampla)",
-      "limiar": "1 de 1",
-      "valor": "0 de 1",
-      "passou": false
+      "limiar": "10 de 10",
+      "valor": "10 de 10",
+      "passou": true
     },
     {
       "eval": "Classificação estável entre execuções",
@@ -34,8 +34,8 @@
     },
     {
       "eval": "O contrarian produz ao menos uma objeção com evidência",
-      "limiar": "1 de 1",
-      "valor": "1 de 1",
+      "limiar": "10 de 10",
+      "valor": "10 de 10",
       "passou": true
     },
     {
@@ -46,78 +46,695 @@
     }
   ],
   "custo": {
-    "media_usd": 0.9887,
-    "desvio_usd": 0,
-    "minimo_usd": 0.9887,
-    "maximo_usd": 0.9887
+    "media_usd": 0.9737,
+    "desvio_usd": 0.0591,
+    "minimo_usd": 0.9238,
+    "maximo_usd": 1.1404
   },
   "duracao": {
-    "media_ms": 205225,
-    "maxima_ms": 205225
+    "media_ms": 162698,
+    "maxima_ms": 195781
   },
   "execucoes": [
     {
       "execucao": 1,
       "classificacao": "R7",
-      "custo_usd": 0.9887092000000001,
-      "duracao_ms": 205225,
+      "custo_usd": 0.9743651999999999,
+      "duracao_ms": 195781,
       "chamadas": 7,
       "por_etapa": [
         {
           "etapa": "planejamento",
-          "s": 25.2,
+          "s": 23.2,
           "entrada": 73024,
-          "saida": 1978,
-          "usd": 0.1658
+          "saida": 1723,
+          "usd": 0.1633
         },
         {
           "etapa": "juridico_regulatorio",
-          "s": 28.2,
-          "entrada": 75977,
-          "saida": 2780,
-          "usd": 0.1798
+          "s": 31.3,
+          "entrada": 75846,
+          "saida": 2978,
+          "usd": 0.1815
         },
         {
           "etapa": "setorial",
-          "s": 40.3,
-          "entrada": 75896,
-          "saida": 3822,
-          "usd": 0.19
+          "s": 59.6,
+          "entrada": 75881,
+          "saida": 5717,
+          "usd": 0.2089
         },
         {
           "etapa": "financeiro",
-          "s": 97.3,
-          "entrada": 79985,
-          "saida": 9681,
-          "usd": 0.2568
+          "s": 103.3,
+          "entrada": 79954,
+          "saida": 7989,
+          "usd": 0.2398
         },
         {
           "etapa": "contrarian",
-          "s": 34.4,
-          "entrada": 61960,
-          "saida": 3751,
-          "usd": 0.0169
+          "s": 23.4,
+          "entrada": 61350,
+          "saida": 3236,
+          "usd": 0.0162
         },
         {
           "etapa": "consolidação (com contrarian)",
-          "s": 47.2,
-          "entrada": 19670,
-          "saida": 5519,
-          "usd": 0.0945
+          "s": 42.3,
+          "entrada": 18321,
+          "saida": 4756,
+          "usd": 0.0842
         },
         {
           "etapa": "consolidação (sem contrarian)",
-          "s": 48.4,
-          "entrada": 15661,
-          "saida": 5359,
-          "usd": 0.0849
+          "s": 45.8,
+          "entrada": 14615,
+          "saida": 5130,
+          "usd": 0.0805
         }
       ],
       "evidencias_com_origem": 21,
       "evidencias_total": 21,
-      "valores_do_memo_sem_lastro": 3,
+      "valores_do_memo_sem_lastro": 0,
+      "valores_sem_lastro": [],
+      "valores_do_memo_total": 5,
+      "alavancagem_nas_duas_versoes": true,
+      "contrarian_com_objecao_com_evidencia": true,
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
+    },
+    {
+      "execucao": 2,
+      "classificacao": "R7",
+      "custo_usd": 0.9420261999999999,
+      "duracao_ms": 148465,
+      "chamadas": 7,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 23.5,
+          "entrada": 73024,
+          "saida": 1928,
+          "usd": 0.1653
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 28.1,
+          "entrada": 75898,
+          "saida": 2699,
+          "usd": 0.1788
+        },
+        {
+          "etapa": "financeiro",
+          "s": 49,
+          "entrada": 80047,
+          "saida": 5050,
+          "usd": 0.2106
+        },
+        {
+          "etapa": "setorial",
+          "s": 51.9,
+          "entrada": 75953,
+          "saida": 4935,
+          "usd": 0.2013
+        },
+        {
+          "etapa": "contrarian",
+          "s": 25.8,
+          "entrada": 61247,
+          "saida": 3624,
+          "usd": 0.0166
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 44.5,
+          "entrada": 14545,
+          "saida": 4934,
+          "usd": 0.0784
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 47.2,
+          "entrada": 18457,
+          "saida": 5412,
+          "usd": 0.091
+        }
+      ],
+      "evidencias_com_origem": 21,
+      "evidencias_total": 21,
+      "valores_do_memo_sem_lastro": 1,
+      "valores_sem_lastro": [
+        10850
+      ],
+      "valores_do_memo_total": 5,
+      "alavancagem_nas_duas_versoes": true,
+      "contrarian_com_objecao_com_evidencia": true,
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
+    },
+    {
+      "execucao": 3,
+      "classificacao": "R7",
+      "custo_usd": 1.140396,
+      "duracao_ms": 173418,
+      "chamadas": 7,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 24.7,
+          "entrada": 73024,
+          "saida": 1717,
+          "usd": 0.1632
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 27.1,
+          "entrada": 75879,
+          "saida": 2601,
+          "usd": 0.1778
+        },
+        {
+          "etapa": "financeiro",
+          "s": 75.6,
+          "entrada": 79962,
+          "saida": 7598,
+          "usd": 0.2359
+        },
+        {
+          "etapa": "setorial",
+          "s": 81.7,
+          "entrada": 151797,
+          "saida": 7971,
+          "usd": 0.3833,
+          "reenviado": "não valida contra o schema — sintese: Too big: expected string to have <=600 characters"
+        },
+        {
+          "etapa": "contrarian",
+          "s": 24.8,
+          "entrada": 61828,
+          "saida": 3747,
+          "usd": 0.0169
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 41.4,
+          "entrada": 15290,
+          "saida": 4721,
+          "usd": 0.0778
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 42.2,
+          "entrada": 19775,
+          "saida": 4600,
+          "usd": 0.0856
+        }
+      ],
+      "evidencias_com_origem": 21,
+      "evidencias_total": 21,
+      "valores_do_memo_sem_lastro": 0,
+      "valores_sem_lastro": [],
       "valores_do_memo_total": 4,
-      "alavancagem_nas_duas_versoes": false,
+      "alavancagem_nas_duas_versoes": true,
+      "contrarian_com_objecao_com_evidencia": true,
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
+    },
+    {
+      "execucao": 4,
+      "classificacao": "R7",
+      "custo_usd": 0.9439594,
+      "duracao_ms": 160876,
+      "chamadas": 7,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 26.6,
+          "entrada": 73024,
+          "saida": 1951,
+          "usd": 0.1656
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 24,
+          "entrada": 75966,
+          "saida": 2239,
+          "usd": 0.1743
+        },
+        {
+          "etapa": "setorial",
+          "s": 51.7,
+          "entrada": 75857,
+          "saida": 4793,
+          "usd": 0.1996
+        },
+        {
+          "etapa": "financeiro",
+          "s": 70.5,
+          "entrada": 79960,
+          "saida": 7035,
+          "usd": 0.2303
+        },
+        {
+          "etapa": "contrarian",
+          "s": 24.2,
+          "entrada": 61763,
+          "saida": 3599,
+          "usd": 0.0167
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 39.4,
+          "entrada": 15334,
+          "saida": 4431,
+          "usd": 0.075
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 39.6,
+          "entrada": 19533,
+          "saida": 4345,
+          "usd": 0.0825
+        }
+      ],
+      "evidencias_com_origem": 19,
+      "evidencias_total": 19,
+      "valores_do_memo_sem_lastro": 2,
+      "valores_sem_lastro": [
+        -7419,
+        8.2
+      ],
+      "valores_do_memo_total": 5,
+      "alavancagem_nas_duas_versoes": true,
+      "contrarian_com_objecao_com_evidencia": true,
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
+    },
+    {
+      "execucao": 5,
+      "classificacao": "R7",
+      "custo_usd": 0.9238066000000001,
+      "duracao_ms": 143375,
+      "chamadas": 7,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 25,
+          "entrada": 73024,
+          "saida": 1873,
+          "usd": 0.1648
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 28.8,
+          "entrada": 75875,
+          "saida": 2612,
+          "usd": 0.1779
+        },
+        {
+          "etapa": "setorial",
+          "s": 50.5,
+          "entrada": 75951,
+          "saida": 5037,
+          "usd": 0.2023
+        },
+        {
+          "etapa": "financeiro",
+          "s": 54.7,
+          "entrada": 79981,
+          "saida": 5662,
+          "usd": 0.2166
+        },
+        {
+          "etapa": "contrarian",
+          "s": 21,
+          "entrada": 61897,
+          "saida": 3281,
+          "usd": 0.0163
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 35.5,
+          "entrada": 12125,
+          "saida": 4030,
+          "usd": 0.0645
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 42.7,
+          "entrada": 15809,
+          "saida": 4982,
+          "usd": 0.0814
+        }
+      ],
+      "evidencias_com_origem": 22,
+      "evidencias_total": 22,
+      "valores_do_memo_sem_lastro": 1,
+      "valores_sem_lastro": [
+        4070
+      ],
+      "valores_do_memo_total": 4,
+      "alavancagem_nas_duas_versoes": true,
+      "contrarian_com_objecao_com_evidencia": true,
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
+    },
+    {
+      "execucao": 6,
+      "classificacao": "R7",
+      "custo_usd": 0.932161,
+      "duracao_ms": 153630,
+      "chamadas": 7,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 24.7,
+          "entrada": 73024,
+          "saida": 1824,
+          "usd": 0.1643
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 25.9,
+          "entrada": 75910,
+          "saida": 2433,
+          "usd": 0.1762
+        },
+        {
+          "etapa": "setorial",
+          "s": 44.2,
+          "entrada": 75899,
+          "saida": 4426,
+          "usd": 0.1961
+        },
+        {
+          "etapa": "financeiro",
+          "s": 72.6,
+          "entrada": 79983,
+          "saida": 7734,
+          "usd": 0.2373
+        },
+        {
+          "etapa": "contrarian",
+          "s": 20.2,
+          "entrada": 61419,
+          "saida": 2936,
+          "usd": 0.0158
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 32.8,
+          "entrada": 14835,
+          "saida": 3632,
+          "usd": 0.066
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 36.1,
+          "entrada": 18126,
+          "saida": 4031,
+          "usd": 0.0766
+        }
+      ],
+      "evidencias_com_origem": 21,
+      "evidencias_total": 21,
+      "valores_do_memo_sem_lastro": 1,
+      "valores_sem_lastro": [
+        -7297
+      ],
+      "valores_do_memo_total": 4,
+      "alavancagem_nas_duas_versoes": true,
+      "contrarian_com_objecao_com_evidencia": true,
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
+    },
+    {
+      "execucao": 7,
+      "classificacao": "R7",
+      "custo_usd": 0.9769016,
+      "duracao_ms": 158927,
+      "chamadas": 7,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 22.7,
+          "entrada": 73024,
+          "saida": 1722,
+          "usd": 0.1633
+        },
+        {
+          "etapa": "setorial",
+          "s": 46.6,
+          "entrada": 75885,
+          "saida": 4401,
+          "usd": 0.1958
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 50.2,
+          "entrada": 75823,
+          "saida": 4646,
+          "usd": 0.1981
+        },
+        {
+          "etapa": "financeiro",
+          "s": 71.8,
+          "entrada": 79958,
+          "saida": 7535,
+          "usd": 0.2353
+        },
+        {
+          "etapa": "contrarian",
+          "s": 20.6,
+          "entrada": 61772,
+          "saida": 3196,
+          "usd": 0.0162
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 40.4,
+          "entrada": 19566,
+          "saida": 4645,
+          "usd": 0.0856
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 43.8,
+          "entrada": 15255,
+          "saida": 5220,
+          "usd": 0.0827
+        }
+      ],
+      "evidencias_com_origem": 24,
+      "evidencias_total": 24,
+      "valores_do_memo_sem_lastro": 0,
+      "valores_sem_lastro": [],
+      "valores_do_memo_total": 4,
+      "alavancagem_nas_duas_versoes": true,
+      "contrarian_com_objecao_com_evidencia": true,
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
+    },
+    {
+      "execucao": 8,
+      "classificacao": "R7",
+      "custo_usd": 0.9433572000000001,
+      "duracao_ms": 146392,
+      "chamadas": 7,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 28.1,
+          "entrada": 73024,
+          "saida": 2185,
+          "usd": 0.1679
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 26.7,
+          "entrada": 75906,
+          "saida": 2437,
+          "usd": 0.1762
+        },
+        {
+          "etapa": "financeiro",
+          "s": 48.1,
+          "entrada": 80036,
+          "saida": 5386,
+          "usd": 0.2139
+        },
+        {
+          "etapa": "setorial",
+          "s": 52.9,
+          "entrada": 76044,
+          "saida": 5232,
+          "usd": 0.2044
+        },
+        {
+          "etapa": "contrarian",
+          "s": 18.6,
+          "entrada": 61984,
+          "saida": 2897,
+          "usd": 0.0159
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 38.3,
+          "entrada": 15497,
+          "saida": 4259,
+          "usd": 0.0736
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 46.8,
+          "entrada": 19470,
+          "saida": 5254,
+          "usd": 0.0915
+        }
+      ],
+      "evidencias_com_origem": 22,
+      "evidencias_total": 22,
+      "valores_do_memo_sem_lastro": 0,
+      "valores_sem_lastro": [],
+      "valores_do_memo_total": 4,
+      "alavancagem_nas_duas_versoes": true,
+      "contrarian_com_objecao_com_evidencia": true,
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
+    },
+    {
+      "execucao": 9,
+      "classificacao": "R7",
+      "custo_usd": 0.9846686000000001,
+      "duracao_ms": 171699,
+      "chamadas": 7,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 25.1,
+          "entrada": 73024,
+          "saida": 2192,
+          "usd": 0.168
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 29.9,
+          "entrada": 75948,
+          "saida": 2643,
+          "usd": 0.1783
+        },
+        {
+          "etapa": "financeiro",
+          "s": 66.7,
+          "entrada": 80067,
+          "saida": 6569,
+          "usd": 0.2258
+        },
+        {
+          "etapa": "setorial",
+          "s": 82,
+          "entrada": 76066,
+          "saida": 8176,
+          "usd": 0.2339
+        },
+        {
+          "etapa": "contrarian",
+          "s": 18.8,
+          "entrada": 62413,
+          "saida": 2935,
+          "usd": 0.016
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 35.5,
+          "entrada": 16060,
+          "saida": 3942,
+          "usd": 0.0715
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 45.9,
+          "entrada": 19497,
+          "saida": 5212,
+          "usd": 0.0911
+        }
+      ],
+      "evidencias_com_origem": 20,
+      "evidencias_total": 20,
+      "valores_do_memo_sem_lastro": 2,
+      "valores_sem_lastro": [
+        4.5,
+        1742
+      ],
+      "valores_do_memo_total": 5,
+      "alavancagem_nas_duas_versoes": true,
+      "contrarian_com_objecao_com_evidencia": true,
+      "verificacoes_presentes": true,
+      "origens_reprovadas": []
+    },
+    {
+      "execucao": 10,
+      "classificacao": "R7",
+      "custo_usd": 0.975467,
+      "duracao_ms": 174414,
+      "chamadas": 7,
+      "por_etapa": [
+        {
+          "etapa": "planejamento",
+          "s": 26.6,
+          "entrada": 73024,
+          "saida": 2009,
+          "usd": 0.1661
+        },
+        {
+          "etapa": "juridico_regulatorio",
+          "s": 28.9,
+          "entrada": 75887,
+          "saida": 2657,
+          "usd": 0.1783
+        },
+        {
+          "etapa": "setorial",
+          "s": 46.5,
+          "entrada": 75970,
+          "saida": 4717,
+          "usd": 0.1991
+        },
+        {
+          "etapa": "financeiro",
+          "s": 78,
+          "entrada": 80004,
+          "saida": 8373,
+          "usd": 0.2437
+        },
+        {
+          "etapa": "contrarian",
+          "s": 22.9,
+          "entrada": 62063,
+          "saida": 3557,
+          "usd": 0.0167
+        },
+        {
+          "etapa": "consolidação (sem contrarian)",
+          "s": 41.8,
+          "entrada": 15757,
+          "saida": 4873,
+          "usd": 0.0802
+        },
+        {
+          "etapa": "consolidação (com contrarian)",
+          "s": 46.9,
+          "entrada": 19821,
+          "saida": 5157,
+          "usd": 0.0912
+        }
+      ],
+      "evidencias_com_origem": 24,
+      "evidencias_total": 24,
+      "valores_do_memo_sem_lastro": 0,
+      "valores_sem_lastro": [],
+      "valores_do_memo_total": 5,
+      "alavancagem_nas_duas_versoes": true,
       "contrarian_com_objecao_com_evidencia": true,
       "verificacoes_presentes": true,
       "origens_reprovadas": []
