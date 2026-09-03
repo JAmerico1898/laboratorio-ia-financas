@@ -14,6 +14,7 @@ import { FornecedorSimulado } from "@/lib/fornecedores/simulado";
 import { respostasDemo } from "@/lib/fornecedores/respostas-demo";
 import { ArmazemEmMemoria, type ArmazemExecucao } from "@/lib/armazem";
 import { ArmazemRedis } from "@/lib/armazem-redis";
+import { credenciaisKV } from "@/lib/credenciais-kv";
 import type { AdaptadoresExecucao } from "@/lib/orquestrador";
 
 function exigir(nome: string): string {
@@ -86,16 +87,15 @@ const armazemLocal = new ArmazemEmMemoria();
 let armazemRedis: ArmazemExecucao | null = null;
 
 export function armazem(): ArmazemExecucao {
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
-  if (!url || !token) return armazemLocal;
+  const credenciais = credenciaisKV();
+  if (!credenciais) return armazemLocal;
 
-  armazemRedis ??= new ArmazemRedis(url, token);
+  armazemRedis ??= new ArmazemRedis(credenciais.url, credenciais.token);
   return armazemRedis;
 }
 
 /** Verdadeiro quando o estado sobrevive entre instâncias. Exibido em /api/saude. */
 export function armazemDuravel(): boolean {
-  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+  return credenciaisKV() !== null;
 }
 
