@@ -13,6 +13,7 @@ import { FornecedorOpenAI } from "@/lib/fornecedores/openai";
 import { FornecedorSimulado } from "@/lib/fornecedores/simulado";
 import { respostasDemo } from "@/lib/fornecedores/respostas-demo";
 import { ArmazemEmMemoria, type ArmazemExecucao } from "@/lib/armazem";
+import { ArmazemRedis } from "@/lib/armazem-redis";
 import type { AdaptadoresExecucao } from "@/lib/orquestrador";
 
 function exigir(nome: string): string {
@@ -73,13 +74,28 @@ export function adaptadorSupervisor() {
 }
 
 /**
- * Armazém de execução. Sem KV configurado, cai no adaptador em memória — que é o que a Fase 1
- * e o desenvolvimento local usam. O módulo vive fora do request para sobreviver entre chamadas
- * no mesmo processo.
+ * Armazém de execução (§8.2).
+ *
+ * Com KV configurado, Redis efêmero com TTL de 2h. Sem ele, o adaptador em memória — que serve o
+ * desenvolvimento local e os testes, e **só funciona porque ali há um processo só**. Na Vercel as
+ * funções são efêmeras e não compartilham memória: sem Redis, o `GET` da tela pode cair numa
+ * instância que nunca viu a execução disparada pelo `POST`.
  */
 const armazemLocal = new ArmazemEmMemoria();
 
+let armazemRedis: ArmazemExecucao | null = null;
+
 export function armazem(): ArmazemExecucao {
-  return armazemLocal;
+  const url = process.env.KV_REST_API_URL;
+  const token = process.env.KV_REST_API_TOKEN;
+  if (!url || !token) return armazemLocal;
+
+  armazemRedis ??= new ArmazemRedis(url, token);
+  return armazemRedis;
+}
+
+/** Verdadeiro quando o estado sobrevive entre instâncias. Exibido em /api/saude. */
+export function armazemDuravel(): boolean {
+  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 }
 

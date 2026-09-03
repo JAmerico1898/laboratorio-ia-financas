@@ -15,3 +15,6 @@ coverage/
 
 # evidência bruta da última execução real, útil para auditar sem gastar outra
 evals/ultima-execucao.json
+
+# vínculo local com a Vercel
+.vercel

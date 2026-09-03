@@ -7,7 +7,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { adaptadoresReais, adaptadorSupervisor } from "@/lib/config-servidor";
+import { adaptadoresReais, adaptadorSupervisor, armazemDuravel } from "@/lib/config-servidor";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -55,7 +55,14 @@ export async function GET() {
   }
 
   return NextResponse.json(
-    { ok: tudoBem, verificado_em: new Date().toISOString(), verificacoes },
-    { status: tudoBem ? 200 : 503 },
+    {
+      ok: tudoBem && armazemDuravel(),
+      verificado_em: new Date().toISOString(),
+      // Sem Redis, o estado não sobrevive entre instâncias e a tela de execução quebra em
+      // produção. É condição de saúde, não detalhe de infraestrutura (§8.2).
+      armazem_duravel: armazemDuravel(),
+      verificacoes,
+    },
+    { status: tudoBem && armazemDuravel() ? 200 : 503 },
   );
 }
