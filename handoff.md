@@ -1,118 +1,99 @@
 # handoff.md — Comitê de Crédito IA
 
-> Estado do projeto em **2 de setembro de 2026**, ao fim da sessão de construção.
-> A Fase 1 do plano está **completa** e o aplicativo roda de ponta a ponta, com fornecedores
-> simulados e com os fornecedores reais.
+> Estado em **2 de setembro de 2026**, ao fim da sessão de construção.
+> O aplicativo está **no ar, verificado em produção com chamadas reais**.
+> `https://laboratorio-ia-financas.vercel.app`
 
 ## Como retomar
 
 Abra uma sessão em `D:\Disciplinas\Coppead - Disciplinas\Curso de IA\09_App_Comite_Credito` e
-diga: *"leia handoff.md e spec.md"*.
-
-O `spec.md` desta pasta é a **fonte canônica**. A cópia em `04_Spec_App/` é ponteiro histórico e
-não deve ser editada.
+diga: *"leia handoff.md e spec.md"*. O `spec.md` desta pasta é a fonte canônica; a cópia em
+`04_Spec_App/` é ponteiro histórico e não deve ser editada.
 
 ---
 
-## 1. O que existe
-
-```
-09_App_Comite_Credito/          repositório git, 1 commit, ainda NÃO publicado
-  spec.md                       versão 1.1 + §15.1 com as correções de campo
-  README.md  CLAUDE.md  AGENTS.md  handoff.md
-  .env.local                    chaves preenchidas — NÃO versionado
-  .env.example                  modelo, valores vazios — versionado
-  .githooks/pre-commit          controle: aborta commit com chave em código de cliente
-  .github/workflows/ci.yml      lint + tipos + testes + e2e
-  evals/ultimo.json             última rodada de evals
-  public/demo/dossie-casas-bahia.json   16 documentos, ~97 mil tokens
-  src/                          app, componentes, lib, prompts, config
-  tests/  e2e/  scripts/
-```
-
-**Verificação executada, não impressão:**
+## 1. Verificação executada
 
 | O quê | Resultado |
 |---|---|
-| `npm test` | **190/190 verdes** em 14 arquivos |
+| `npm test` | **211/211 verdes**, 16 arquivos |
 | `npm run test:e2e` | **7/7 verdes**, fornecedores simulados |
-| CI no GitHub Actions | **verde nos 13 passos** |
-| `npm run build` | compila; 6 telas e 5 rotas de API |
-| `npm run lint` / `tsc --noEmit` | limpos |
-| hook de pre-commit | passa no repo limpo e **aborta** com chave em código de cliente (testado nos dois sentidos) |
-| execução real com os dois fornecedores | roda; ver §3 para o problema aberto |
+| CI no GitHub Actions | verde nos 13 passos |
+| `npm run build` · `tsc --noEmit` · `npm run lint` | limpos |
+| Hook de pre-commit | testado nos dois sentidos: passa limpo, **aborta** com chave em código de cliente |
+| `/api/saude` em produção | `ok: true`, `armazem_duravel: true`, três modelos com `confere: true` |
+| **Fluxo completo em produção** | demo → 7 chamadas → memo → log travado → decisão → log liberado |
 
-## 2. As quatro correções de campo (§15.1 do spec)
+O ciclo em produção, medido: planejamento 26,5 s → três especialistas **em paralelo** (o mais
+lento, 103,9 s) → contrarian 22,0 s → duas consolidações em paralelo (43,5 s). Memo `R7 /
+não conceder`, score 1,55, **5 divergências registradas**, US$ 1,16, 197 s.
 
-O spec 1.1 errava em quatro pontos que só a API real revelou. Todos corrigidos no código e no
-spec — e todos são conteúdo de aula, não erratas.
+## 2. A medição da §9 — o número que você queria
 
-1. **`gpt-5.6-luna` confirmado** na Models API. A família 5.6 tem `luna`, `sol` e `terra`; a 1.0
-   chutava "Sol". Preço: US$ 0,20 / US$ 1,20 por 1M.
-2. **O contrarian também recusa `temperature`.** `gpt-5.6-luna` devolve 400 para 0,7 — *"Only
-   the default (1) value is supported"*. O parâmetro foi removido; o modelo roda no padrão 1,0,
-   que é **mais** variável que os 0,7 pretendidos. O log mostra `padrão (1,0)`.
-3. **Os dois fornecedores não custam o mesmo.** O contrarian custa **um décimo** do Claude por
-   token. A §9 foi reescrita: a tela de log ficou com uma comparação melhor do que a paridade
-   supunha.
-4. **O schema nunca ia junto do prompt.** O preâmbulo mandava responder "no schema fornecido",
-   mas nenhum schema era enviado — o modelo inventava a própria forma, reprovava na validação e
-   o reenvio único dobrava o custo de cada etapa. **A primeira execução real custou US$ 4,64 e
-   não produziu memo por causa disso.** Corrigido com saída estruturada nos dois fornecedores
-   (`src/lib/schema-json.ts`), mais dois achados no caminho:
-   - a saída estruturada da Anthropic recusa `minimum`/`maximum`/`maxLength`; essas restrições
-     são removidas do que vai ao modelo e continuam valendo no Zod, que é quem valida;
-   - `modelo` e `fornecedor` saíram do schema e passaram a ser **carimbados pelo servidor**.
-     Perguntado sobre o próprio identificador, o Sonnet 5 respondeu `"gpt-5-thinking"`.
+Dez execuções completas do caso Casas Bahia, na configuração que está no ar:
 
-## 3. O problema aberto: o critério de 3 minutos
-
-A §13.1 exige memo em menos de 3 minutos. A §3.2 fixa `effort: "high"` nos quatro papéis Claude.
-**Os dois não fecham juntos** com o dossiê de ~97 mil tokens.
-
-Medido nesta sessão, com um dossiê pequeno (8 mil tokens), uma chamada de especialista:
-
-| Esforço | Tempo | Saída |
+| | Custo (US$) | Duração (s) |
 |---|---|---|
-| `high` | 70 s e 351 s em duas medições | 6.685 e 7.835 tokens |
-| `low` | 19,5 s | 1.964 tokens |
+| **Média** | **0,9737** | 162,7 |
+| **Desvio padrão** | **0,0591** | — |
+| Mínimo · mediana · máximo | 0,9238 · 0,9744 · 1,1404 | 143 · 161 · 196 |
 
-A execução tem **quatro estágios sequenciais** (planejamento → especialistas em paralelo →
-contrarian → consolidações em paralelo). Mesmo no melhor caso de `high`, quatro estágios de
-70 s já dão 4 min 40 s.
+Durações, em segundos: 143 · 146 · 148 · 154 · 159 · 161 · 172 · 173 · 174 · 196.
 
-`src/lib/fornecedores/anthropic.ts` ganhou a variável `ESFORCO_CLAUDE`, que **continua com padrão
-`"high"`**, como o spec manda. A escolha entre baixar o esforço, encolher o dossiê ou revisar o
-critério é do autor — está registrada como decisão pendente, não tomada em silêncio.
+**Para o item de ressarcimento:** US$ 0,97 por execução. Um teto de **US$ 1,20** cobre a cauda
+observada — a execução mais cara custou US$ 1,14 e foi a única com reenvio. O teto mensal de
+US$ 50 da §8.6 comporta ~50 execuções.
 
-Encolher o dossiê é a alternativa com melhor relação custo-benefício: os três releases de 4T
-respondem por **260 mil dos 387 mil caracteres** e são o material menos estruturado do conjunto.
+Sete chamadas em todas as dez, **zero erros**, um único reenvio em setenta chamadas. As dez
+classificaram **R7**: variação zero entre execuções.
 
-## 4. Fase 2 — o que falta
+O contrarian custa **US$ 0,016** — 1,7% da execução, lendo o dossiê *mais* as três análises. É o
+dado de aula: o revisor independente em outro fornecedor custa quase nada; o que pesa é quanto
+contexto cada agente recebe.
 
-| # | Pendência | Estado |
+## 3. Cinco defeitos que só a execução real revelou
+
+Nenhum aparecia em teste. Todos estão no spec, §15.1.
+
+1. **O schema nunca era enviado ao modelo.** O preâmbulo mandava responder "no schema fornecido"
+   e nada ia junto. **A primeira execução real custou US$ 4,64 e não produziu memo.** Corrigido
+   com saída estruturada nos dois fornecedores.
+2. **O contrarian também recusa `temperature`.** `gpt-5.6-luna` devolve 400 para 0,7. Roda no
+   padrão 1,0 — mais variável que os 0,7 pretendidos, o que serve melhor ao papel.
+3. **Não há paridade de preço.** O contrarian custa **um décimo** do Claude por token.
+4. **O KV estava provisionado e o app não o via.** A integração Upstash foi conectada com o
+   prefixo `KV_REST_API_TOKEN`, criando `KV_REST_API_TOKEN_KV_REST_API_URL`, enquanto as
+   variáveis canônicas existiam à mão e **vazias** — e eram as que o app lia.
+   `src/lib/credenciais-kv.ts` resolve a família inteira e nunca escolhe o token só de leitura.
+5. **`waitUntil` não é detalhe.** A rota devolvia 202 e disparava a orquestração com `void`. A
+   Vercel congela a instância assim que a resposta sai: a execução ficou **oito minutos em
+   "aguardando", com zero chamadas no log**. Os testes de ponta a ponta não pegam isso — rodam
+   contra `next start`, um processo só, onde `void promessa` funciona.
+
+## 4. O que continua aberto
+
+| # | Item | Situação |
 |---|---|---|
-| 1 | Identificador do contrarian e `OPENAI_API_KEY` | ✅ resolvida |
-| 2 | `ANTHROPIC_API_KEY` | ✅ resolvida |
-| 3 | Repositório público | ✅ público desde 2/9/2026 |
-| 4 | **Publicar o commit** no GitHub | ⬜ aguarda sua autorização — o repo é público |
-| 5 | `vercel login` + provisionar o KV | ⬜ **só você pode**: `! vercel login` (fluxo de dispositivo) |
-| 6 | Decidir o esforço / tamanho do dossiê (§3 acima) | ⬜ decisão sua |
-| 7 | Dez execuções de medição de custo (§9) | ⬜ ~US$ 1,30 cada; aguarda sua autorização |
-| 8 | Vídeo de 5 minutos (§13.10) | ⬜ depende do app publicado |
+| 1 | **Vídeo de 5 minutos** (§13.10) | Só falta gravar: o app está no ar e os identificadores fixados |
+| 2 | **O supervisor deriva números** | Decisão sua — ver §4.1 abaixo |
+| 3 | **Critério de 3 minutos** | Atendido em **9 de 10**; a cauda vai a ~196 s |
+| 4 | Limpar duas variáveis vazias na Vercel | Opcional: `KV_REST_API_URL` e `KV_REST_API_TOKEN` não são mais lidas |
 
-## 5. Segurança — uma coisa que você precisa saber
+### 4.1 A pergunta que sobrou para você
 
-As chaves estavam preenchidas também no **`.env.example`**, que é versionado. O teste da §10.6
-pegou isso e o arquivo foi limpo antes de qualquer commit — nenhuma chave entrou no histórico do
-git. Mas a `ANTHROPIC_API_KEY` **apareceu por extenso na saída daquele teste**, nesta sessão.
+O supervisor calculou `CCL = 14.403,0 − 21.822,0 = −7.419,0`. Os dois insumos estão citados com a
+conta e a aritmética está certa — mas a **§5.3 diz "Não crie número novo. Todo valor do memo tem
+de estar em alguma evidência recebida."**
 
-**Recomendação: gire a `ANTHROPIC_API_KEY` no console da Anthropic** e atualize o `.env.local`.
-O teste foi corrigido para comparar comprimento, nunca valor — uma falha dele não imprime mais o
-segredo que acabou de encontrar. O hook de pre-commit também passou a barrar `sk-ant-…` e
-`sk-proj-…` por extenso em qualquer arquivo do commit.
+Acontece em **5 das 10 execuções**, em 7 de 45 valores citados nos riscos do memo. Ou o supervisor
+está violando a regra, ou a regra é apertada demais e deveria permitir aritmética sobre evidência
+já citada. É a diferença entre **inventar** um número e **derivar** um — e dá meia hora de aula.
 
-## 6. Onde está o material de origem
+Enquanto não for decidido, o eval "nenhum valor do memo é inexistente nas evidências" reprova de
+propósito. Os outros cinco limiares da §10.4 passam: origem 100%, alavancagem nas duas versões
+10/10, classificação estável, contrarian com objeção 10/10, verificações 100%.
+
+## 5. Onde está o material de origem
 
 | O que | Onde |
 |---|---|
@@ -122,19 +103,20 @@ segredo que acabou de encontrar. O hook de pre-commit também passou a barrar `s
 | Metodologia: indicadores, pesos, escala R1–R7 | `../03_Prompt_e_Skill/credit-analysis/references/metodologia.md` |
 | Modelo de credit memo | `../03_Prompt_e_Skill/credit-analysis/references/modelo_credit_memo.md` |
 | Preset de tokens e versões da família | `D:\jose_americo\laboratorio-derivativos\src\app\globals.css` |
-| Plano de produção do curso | `../00_LEIAME.md` |
 
 `npm run sync:curso` confere se `src/prompts/curso/` divergiu do curso. É script local: o
 repositório é autônomo e o CI não enxerga `03_Prompt_e_Skill/`.
 
-## 7. Armadilhas conhecidas
+## 6. Armadilhas conhecidas
 
 - **Não** acrescentar sufixo de data a identificador de modelo Anthropic.
 - **Não** enviar `temperature` a nenhum dos dois modelos — os dois devolvem 400.
-- **Não** pedir ao modelo que preencha `modelo` ou `fornecedor`: ele inventa.
-- **Não** enviar JSON Schema com `minimum`/`maximum`/`maxLength` à saída estruturada da Anthropic.
-- **Não** mandar os três `DFP_*.pdf` (5 MB cada) por extenso aos agentes.
+- **Não** pedir ao modelo que preencha `modelo` ou `fornecedor`: perguntado sobre o próprio
+  identificador, o Sonnet 5 respondeu `"gpt-5-thinking"`.
+- **Não** enviar JSON Schema com `minimum`/`maximum`/`maxLength` à saída estruturada da Anthropic,
+  nem embutir as análises no schema do memo — estoura a gramática compilada.
+- **Não** disparar trabalho de fundo em rota da Vercel sem `waitUntil`.
+- **Não** devolver os releases de 4T ao dossiê demo: eram dois terços do contexto de cada agente.
 - **Não** embarcar a planilha adulterada da Aula 2 no aplicativo.
-- **Não** deixar `src/prompts/curso/` divergir do curso em silêncio.
 - **Não** persistir arquivo enviado pelo usuário. O armazém guarda só log, plano, análises e memos.
 - A §1.2 é contrato. Qualquer inclusão fora dela exige decisão explícita do autor.

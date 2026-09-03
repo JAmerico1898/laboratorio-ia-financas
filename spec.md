@@ -869,6 +869,8 @@ Aula 4 mostra **por que** um spec muda.
 | 20 | Os três releases de 4T saem do dossiê demo: eram 260 dos 387 mil caracteres e 2/3 do contexto de cada agente | §6.1 |
 | 21 | EBITDA passa a ser calculado do plano padronizado da CVM (3.05 + 6.01.01.03), com o ajustado da companhia declarado ausente | §5.4, §6.1 |
 | 22 | O **planejamento** roda em `effort: "low"`: ele organiza a análise, não a faz. Era o estágio mais lento do caminho crítico | §3.2, §13.1 |
+| 23 | `waitUntil` na rota que dispara a orquestração; sem ele a Vercel congela a instância no 202 e nada executa | §7, §8.2 |
+| 24 | As credenciais do KV são descobertas sob qualquer nome que a integração da Vercel crie, e nunca o token só de leitura | §8.2 |
 
 ### Pendências do autor
 
