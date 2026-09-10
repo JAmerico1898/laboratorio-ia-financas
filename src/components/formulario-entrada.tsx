@@ -19,6 +19,36 @@ import { cnpjValido, formatarCnpj } from "@/lib/cnpj";
 
 const MODALIDADES = ["capital de giro", "conta garantida", "financiamento de estoque", "CCB"];
 
+/**
+ * Orientação de dossiê da caixa de upload (spec §6.1).
+ *
+ * É sugestão, não validação: nada aqui rejeita arquivo nem entra no `completo` do botão. O bloco
+ * "rende pouco" existe porque release de resultado foi medido — §6.1, lição 20 — como o material
+ * menos denso do conjunto, e ocupa slot que as demonstrações usariam melhor.
+ */
+const ORIENTACAO = [
+  {
+    titulo: "Essencial",
+    itens: [
+      "Balanço, DRE e fluxo de caixa dos três últimos exercícios. Em planilha, se você tiver — a extração lê tabela melhor que PDF, e um arquivo rende o que três rendem.",
+      "Documentos de eventos de crédito: reperfilamento de dívida, recuperação judicial ou extrajudicial, quebra de covenant.",
+    ],
+  },
+  {
+    titulo: "Otimiza a análise",
+    itens: [
+      "Demonstrações de um ou dois comparáveis do setor. Sem elas, o agente setorial registra a ausência em vez de comparar.",
+      "Notas explicativas de endividamento e contingências.",
+    ],
+  },
+  {
+    titulo: "Rende pouco",
+    itens: [
+      "Release de resultado e apresentação de RI: muito texto, pouco número novo — ocupam o espaço das demonstrações.",
+    ],
+  },
+];
+
 export function FormularioEntrada() {
   const router = useRouter();
   const inputArquivos = useRef<HTMLInputElement>(null);
@@ -96,6 +126,31 @@ export function FormularioEntrada() {
               className="hidden"
               onChange={(e) => setArquivos([...(e.target.files ?? [])].slice(0, 5))}
             />
+
+            {/* Só a área de arrastar abre o seletor: ler a lista não deve disparar o diálogo. */}
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="mt-6 cursor-default space-y-4 border-t border-border pt-5 text-left"
+            >
+              {ORIENTACAO.map((bloco) => (
+                <div key={bloco.titulo}>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-foreground">
+                    {bloco.titulo}
+                  </p>
+                  <ul className="mt-1 list-disc space-y-1 pl-4">
+                    {bloco.itens.map((item) => (
+                      <li key={item} className="text-xs leading-relaxed text-muted-foreground">
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              <p className="text-xs italic leading-relaxed text-muted-foreground">
+                Nada aqui é obrigatório além de um arquivo. A lista é sugestão: o app analisa o que
+                você anexar e declara no memo o que faltou.
+              </p>
+            </div>
           </div>
           {arquivos.length > 0 && (
             <ul className="mt-2 space-y-1 text-sm text-muted-foreground">

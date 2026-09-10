@@ -482,6 +482,17 @@ aprovação.
 Cabeçalho curto explicando o que o app é (três linhas) e o formulário:
 
 - Upload de arquivos (PDF ou XLSX, até 5 arquivos, 20 MB cada) com área de arrastar e soltar.
+  Dentro da própria caixa, abaixo de um divisor, uma **orientação de dossiê** em três blocos —
+  *essencial*, *otimiza a análise*, *rende pouco*. Ela é deliberadamente genérica quanto à origem
+  do documento: a contraparte pode ser companhia fechada, sem DFP na CVM. Mantém, porém, dois
+  qualificadores que não dependem de companhia aberta: **três exercícios** (com dois, a análise
+  horizontal reporta variação sem tendência) e **preferência por planilha** (o `extrair()` converte
+  XLSX em TSV por aba, e um arquivo de algumas centenas de KB rende o que três DFP em PDF de 5 MB
+  renderiam, ocupando um slot em vez de três). O bloco *rende pouco* desaconselha release de
+  resultado e apresentação de RI, pelo mesmo motivo medido que os tirou do dossiê demo (lição 20).
+  A orientação é **sugestão, nunca validação**: não filtra, não rejeita e não entra na condição do
+  botão. Uma linha final diz isso ao usuário, para os três blocos não serem lidos como requisito.
+  A lista não é clicável — só a área de arrastar abre o seletor de arquivos.
 - CNPJ (com máscara e validação de dígito verificador) e nome da contraparte.
 - Valor da operação (R$), prazo (meses), modalidade (select), data-base (date).
 - Interruptor **"incluir revisão contrarian"**, ligado por padrão. É ele que permite a

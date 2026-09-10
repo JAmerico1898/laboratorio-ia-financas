@@ -10,10 +10,14 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
+import { FormularioEntrada } from "@/components/formulario-entrada";
 import { PainelExecucao } from "@/components/painel-execucao";
 import { PainelDecisao } from "@/components/painel-decisao";
 import type { EstadoExecucao } from "@/lib/armazem";
 import { analiseDe, dossieDeTeste, planoDeTeste } from "./apoio";
+
+/** O formulário de entrada usa o router ao concluir o POST; nada aqui navega. */
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: vi.fn() }) }));
 
 const estadoBase: EstadoExecucao = {
   execucao_id: "exec-1",
@@ -181,5 +185,38 @@ describe("tela de decisão (§6.4)", () => {
       "disabled",
       false,
     );
+  });
+});
+
+describe("tela de entrada — orientação de dossiê (§6.1)", () => {
+  it("mostra os três blocos e declara que a lista é sugestão, não requisito", () => {
+    render(<FormularioEntrada />);
+
+    for (const titulo of ["Essencial", "Otimiza a análise", "Rende pouco"]) {
+      expect(screen.getByText(titulo)).toBeDefined();
+    }
+    expect(screen.getByText(/três últimos exercícios/)).toBeDefined();
+    expect(screen.getByText(/comparáveis do setor/)).toBeDefined();
+    expect(screen.getByText(/Release de resultado/)).toBeDefined();
+    expect(screen.getByText(/A lista é sugestão/)).toBeDefined();
+  });
+
+  it("a orientação não vira validação: nada nela entra na condição do botão", () => {
+    render(<FormularioEntrada />);
+    const botao = screen.getByRole("button", { name: /Executar análise/ });
+    expect(botao.hasAttribute("disabled")).toBe(true);
+  });
+
+  it("ler a lista não abre o seletor de arquivos; a área de arrastar abre", async () => {
+    render(<FormularioEntrada />);
+    const usuario = userEvent.setup();
+    const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const clique = vi.spyOn(input, "click").mockImplementation(() => {});
+
+    await usuario.click(screen.getByText("Essencial"));
+    expect(clique).not.toHaveBeenCalled();
+
+    await usuario.click(screen.getByText(/Arraste até 5 arquivos/));
+    expect(clique).toHaveBeenCalled();
   });
 });
